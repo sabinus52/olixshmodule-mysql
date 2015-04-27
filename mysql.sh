@@ -36,18 +36,9 @@ olixmod_require_binary()
 olixmod_usage()
 {
     logger_debug "module_mysql__olixmod_usage ()"
-    stdout_printVersion
-    echo
-    echo -e "Gestion des bases de données MySQL (sauvegarde, restauration, ...)"
-    echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}[ACTION]${CVOID}"
-    echo
-    echo -e "${CJAUNE}Liste des ACTIONS disponibles${CVOID} :"
-    echo -e "${Cjaune} init    ${CVOID}  : Initialisation du module"
-    echo -e "${Cjaune} dump    ${CVOID}  : Fait un dump d'une base de données"
-    echo -e "${Cjaune} restore ${CVOID}  : Restauration d'une base de données"
-    echo -e "${Cjaune} sync    ${CVOID}  : Synchronisation d'une base à partir d'un serveur distant"
-    echo -e "${Cjaune} help    ${CVOID}  : Affiche cet écran"
+
+    source modules/mysql/lib/usage.lib.sh
+    module_mysql_usage_main
 }
 
 
@@ -57,7 +48,19 @@ olixmod_usage()
 olixmod_list()
 {
     logger_debug "module_mysql__olixmod_list ($@)"
-    echo
+
+    config_loadConfigQuietModule "${OLIX_MODULE_NAME}"
+    if [[ $? -ne 0 ]]; then
+        echo -n ""
+        return 0
+    fi
+    if [[ -z ${OLIX_MODULE_MYSQL_PASSWORD} ]]; then
+        echo -n ""
+        return 0
+    fi
+
+    source modules/mysql/lib/mysql.lib.sh
+    module_mysql_getListDatabases
 }
 
 
@@ -91,7 +94,9 @@ olixmod_main()
 
     # Librairies necessaires
     source lib/stdin.lib.sh
+    source lib/filesystem.lib.sh
     source modules/mysql/lib/mysql.lib.sh
+    source modules/mysql/lib/usage.lib.sh
 
     logger_info "Execution de l'action '${ACTION}' du module ${OLIX_MODULE_NAME}"
     shift
@@ -110,4 +115,30 @@ function mysql_action__init()
     mysql_init__main $@
 
     echo -e "${Cvert}Action terminée avec succès${CVOID}"
+}
+
+
+###
+# Fait un dump d'une base de données
+##
+function mysql_action__dump()
+{
+    logger_debug "mysql_action__dump ($@)"
+
+    # Charge la configuration du module
+    config_loadConfigModule "${OLIX_MODULE_NAME}"
+
+    # Affichage de l'aide
+    [ $# -lt 2 ] && module_mysql_usage_dump && core_exit 1
+    [[ "$1" == "help" ]] && module_mysql_usage_dump && core_exit 0
+
+    # Vérifie les paramètres
+    module_mysql_isBaseExists "$1"
+    [[ $? -ne 0 ]] && logger_error "La base '$1' n'existe pas"
+    filesystem_isCreateFile "$2"
+    [[ $? -ne 0 ]] && logger_error "Impossible de créer le fichier '$2'"
+    
+    module_mysql_dumpDatabase $1 $2
+
+    [[ $? -eq 0 ]] && echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }

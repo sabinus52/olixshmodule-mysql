@@ -18,12 +18,16 @@ _olixsh_module()
             _olixsh_module_init
             return 0
             ;;
+        dump)
+            _olixsh_module_dump
+            return 0
+            ;;
     esac
 }
 
 
 ###
-# Liste des actions du module Ubuntu
+# Liste des actions du module MySQL
 ##
 _olixsh_module_actions()
 {
@@ -36,7 +40,7 @@ _olixsh_module_actions()
 
 
 ###
-# Liste des packages de l'action INIT du module Ubuntu
+# Liste des packages de l'action INIT du module MySQL
 ##
 _olixsh_module_init()
 {
@@ -46,3 +50,14 @@ _olixsh_module_init()
     COMPREPLY=( $(compgen -W "--force" -- ${CUR}) )
 }
 
+
+###
+# Liste des packages de l'action DUMP du module MySQL
+##
+_olixsh_module_dump()
+{
+    local CUR BASES
+    CUR="${COMP_WORDS[COMP_CWORD]}"
+
+    COMPREPLY=( $(compgen -W "$(${OLIX_ROOT_COMP}/olixsh mysql --list)" -- ${cur}) )
+}
