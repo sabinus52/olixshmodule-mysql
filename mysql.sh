@@ -143,7 +143,7 @@ function mysql_action__dump()
     module_mysql_dumpDatabase ${OLIX_MODULE_MYSQL_PARAM1} ${OLIX_MODULE_MYSQL_PARAM2}
     [[ $? -ne 0 ]] && logger_error "Echec du dump"
 
-    [[ $? -eq 0 ]] && echo -e "${Cvert}Action terminée avec succès${CVOID}"
+    echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }
 
 
@@ -171,5 +171,28 @@ function mysql_action__restore()
     module_mysql_restoreDatabase ${OLIX_MODULE_MYSQL_PARAM1} ${OLIX_MODULE_MYSQL_PARAM2}
     [[ $? -ne 0 ]] && logger_error "Echec de la restauration"
 
-    [[ $? -eq 0 ]] && echo -e "${Cvert}Action terminée avec succès${CVOID}"
+    echo -e "${Cvert}Action terminée avec succès${CVOID}"
+}
+
+
+###
+# Crée une base de données
+##
+function mysql_action__create()
+{
+    logger_debug "mysql_action__create ($@)"
+
+    # Charge la configuration du module
+    config_loadConfigModule "${OLIX_MODULE_NAME}"
+
+    # Affichage de l'aide
+    [ $# -lt 1 ] && module_mysql_usage_create && core_exit 1
+    [[ "$1" == "help" ]] && module_mysql_usage_create && core_exit 0
+
+    module_mysql_usage_getParams $@
+    
+    module_mysql_createDatabase ${OLIX_MODULE_MYSQL_PARAM1}
+    [[ $? -ne 0 ]] && logger_error "Echec de la création de la base '${OLIX_MODULE_MYSQL_PARAM1}'"
+
+    echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }

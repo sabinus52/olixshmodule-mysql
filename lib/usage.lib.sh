@@ -25,6 +25,7 @@ function module_mysql_usage_main()
     echo -e "${Cjaune} dump    ${CVOID}  : Fait un dump d'une base de données"
     echo -e "${Cjaune} restore ${CVOID}  : Restauration d'une base de données"
     echo -e "${Cjaune} sync    ${CVOID}  : Synchronisation d'une base à partir d'un serveur distant"
+    echo -e "${Cjaune} create  ${CVOID}  : Création d'une base de données"
     echo -e "${Cjaune} help    ${CVOID}  : Affiche cet écran"
 }
 
@@ -70,7 +71,7 @@ function module_mysql_usage_restore()
     logger_debug "module_mysql_usage_restore ()"
     stdout_printVersion
     echo
-    echo -e "Faire un dump d'une base de données MySQL"
+    echo -e "Restauration d'une base de données MySQL à partir d'un fichier de dump"
     echo
     echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}restore${CVOID} ${CBLANC}[dumpfile] [BASE]${CVOID}"
     echo
@@ -86,6 +87,20 @@ function module_mysql_usage_restore()
         stdout_strpad "${I}" 20 " "
         echo " : Base de de données ${I}"
     done
+}
+
+
+###
+# Usage de l'action CREATE
+##
+function module_mysql_usage_create()
+{
+    logger_debug "module_mysql_usage_create ()"
+    stdout_printVersion
+    echo
+    echo -e "Création d'une base de données MySQL"
+    echo
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}create${CVOID} ${CBLANC}[BASE]${CVOID}"
 }
 
 
