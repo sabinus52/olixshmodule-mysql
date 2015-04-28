@@ -22,6 +22,10 @@ _olixsh_module()
             _olixsh_module_dump
             return 0
             ;;
+        restore)
+            _olixsh_module_restore
+            return 0
+            ;;
     esac
 }
 
@@ -61,3 +65,16 @@ _olixsh_module_dump()
 
     COMPREPLY=( $(compgen -W "$(${OLIX_ROOT_COMP}/olixsh mysql --list)" -- ${cur}) )
 }
+
+
+###
+# Liste des packages de l'action RESTORE du module MySQL
+##
+_olixsh_module_restore()
+{
+    local CUR BASES
+    CUR="${COMP_WORDS[COMP_CWORD]}"
+
+    COMPREPLY=( $(compgen -f -- ${cur}) )
+}
+

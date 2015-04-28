@@ -119,6 +119,7 @@ function module_mysql_getListDatabases()
 # @param $4  : Port du serveur
 # @param $5  : Utilisateur mysql
 # @param $6  : Mot de passe
+# @return bool
 ##
 function module_mysql_dumpDatabase()
 {
@@ -128,6 +129,29 @@ function module_mysql_dumpDatabase()
     local PARAM
     [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
     mysqldump ${PARAM} --opt ${URL} $1 > $2
+    [[ $? -ne 0 ]] && return 1
+    return 0
+}
+
+
+###
+# Restaure un dump d'une base
+# @param $1  : Fichier de dump
+# @param $2  : Nom de la base
+# @param $3  : Host du serveur MySQL
+# @param $4  : Port du serveur
+# @param $5  : Utilisateur mysql
+# @param $6  : Mot de passe
+# @return bool
+##
+function module_mysql_restoreDatabase()
+{
+    local URL=$(module_mysql_getDbUrl $3 $4 $5 $6)
+    logger_debug "module_mysql_restoreDatabase ($1, $2, ${URL})"
+
+    local PARAM
+    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
+    mysql ${PARAM} ${URL} $2 < $1
     [[ $? -ne 0 ]] && return 1
     return 0
 }

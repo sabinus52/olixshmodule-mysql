@@ -48,3 +48,24 @@ function module_mysql_usage_dump()
         echo " : Base de de données ${I}"
     done
 }
+
+
+###
+# Usage de l'action RESTORE
+##
+function module_mysql_usage_restore()
+{
+    logger_debug "module_mysql_usage_restore ()"
+    stdout_printVersion
+    echo
+    echo -e "Faire un dump d'une base de données MySQL"
+    echo
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}restore${CVOID} ${CBLANC}[dumpfile] [BASE]${CVOID}"
+    echo
+    echo -e "${CJAUNE}Restauration d'une base de données à partir d'un dump${CVOID} :"
+    for I in $(module_mysql_getListDatabases); do
+        echo -en "${Cjaune} ${I} ${CVOID}"
+        stdout_strpad "${I}" 20 " "
+        echo " : Base de de données ${I}"
+    done
+}

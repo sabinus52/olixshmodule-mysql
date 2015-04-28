@@ -139,6 +139,33 @@ function mysql_action__dump()
     [[ $? -ne 0 ]] && logger_error "Impossible de créer le fichier '$2'"
     
     module_mysql_dumpDatabase $1 $2
+    [[ $? -ne 0 ]] && logger_error "Echec du dump"
+
+    [[ $? -eq 0 ]] && echo -e "${Cvert}Action terminée avec succès${CVOID}"
+}
+
+
+###
+# Fait une restauration d'un dump
+##
+function mysql_action__restore()
+{
+    logger_debug "mysql_action__restore ($@)"
+
+    # Charge la configuration du module
+    config_loadConfigModule "${OLIX_MODULE_NAME}"
+
+    # Affichage de l'aide
+    [ $# -lt 2 ] && module_mysql_usage_restore && core_exit 1
+    [[ "$1" == "help" ]] && module_mysql_usage_restore && core_exit 0
+
+    # Vérifie les paramètres
+    [[ ! -r $1 ]] && logger_error "Le fichier '$1' est absent ou inaccessible"
+    module_mysql_isBaseExists "$2"
+    [[ $? -ne 0 ]] && logger_error "La base '$2' n'existe pas"
+    
+    module_mysql_restoreDatabase $1 $2
+    [[ $? -ne 0 ]] && logger_error "Echec de la restauration"
 
     [[ $? -eq 0 ]] && echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }
