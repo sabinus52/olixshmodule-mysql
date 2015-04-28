@@ -149,6 +149,27 @@ function module_mysql_usage_copy()
 
 
 ###
+# Usage de l'action SYNC
+##
+function module_mysql_usage_sync()
+{
+    logger_debug "module_mysql_usage_sync ()"
+    stdout_printVersion
+    echo
+    echo -e "Synchronisation d'une base à partir d'un serveur MySQL distant"
+    echo
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}sync${CVOID} ${CBLANC}[BASE destination]${CVOID}"
+    echo
+    echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
+    for I in $(module_mysql_getListDatabases); do
+        echo -en "${Cjaune} ${I} ${CVOID}"
+        stdout_strpad "${I}" 20 " "
+        echo " : Base de de données ${I}"
+    done
+}
+
+
+###
 # Retourne les paramètres de la commandes en fonction des options
 # @param $@ : Liste des paramètres
 ##
@@ -188,4 +209,28 @@ function module_mysql_usage_getParams()
     logger_debug "OLIX_MODULE_MYSQL_PASS=${OLIX_MODULE_MYSQL_PASS}"
     logger_debug "OLIX_MODULE_MYSQL_PARAM1=${OLIX_MODULE_MYSQL_PARAM1}"
     logger_debug "OLIX_MODULE_MYSQL_PARAM2=${OLIX_MODULE_MYSQL_PARAM2}"
+}
+
+
+###
+# Lecture d'une base de donées
+# @return string OLIX_STDIN_RETURN
+##
+function module_mysql_usage_readDatabase()
+{
+    logger_debug "module_mysql_usage_readDatabase ($1, $2, $3, $4)"
+
+    local BASE LIST_BASE
+    LIST_BASE=$(module_mysql_getListDatabases $1 $2 $3 $4)
+    [[ $? -ne 0 ]] && logger_error "Impossible de se connecter au serveur '$1'"
+
+    while true; do
+        for I in ${LIST_BASE}; do
+            echo -e "${Cjaune} $I${CVOID} : Base ${I}"
+        done
+        echo -en "Choix de la base de données [${CBLANC}${CVOID}] : "
+        read BASE
+        core_contains "${BASE}" "${LIST_BASE}" && break
+    done
+    OLIX_STDIN_RETURN=${BASE}
 }

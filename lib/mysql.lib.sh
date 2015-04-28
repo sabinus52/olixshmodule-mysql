@@ -202,7 +202,7 @@ function module_mysql_dropDatabase()
 
 
 ###
-# Copie une base de données vers une autre une base distante vers une localement
+# Copie une base de données vers une autre une base
 # @param $1  : Nom de la base source
 # @param $2  : Nom de la base destination
 # @param $3  : Host du serveur MySQL
@@ -219,6 +219,26 @@ function module_mysql_copyDatabase()
     local PARAM
     [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
     mysqldump ${PARAM} --opt ${URL} $1 | mysql ${URL} $2
+    [[ $? -eq 0 && ${PIPESTATUS} -eq 0 ]] && return 0
+    return 1
+}
+
+
+###
+# Copie une base de données depuis un serveur distant vers une base locale
+# @param $1  : Paramètre de connexion de la source
+# @param $2  : Base source
+# @param $3  : Paramètre de connexion locale
+# @param $4  : Base de destination
+# @return bool
+##
+function module_mysql_synchronizeDatabase()
+{
+    logger_debug "module_mysql_synchronizeDatabase ($1, $2, $3, $4)"
+
+    local PARAM
+    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
+    mysqldump ${PARAM} --opt $1 $2 | mysql $3 $4
     [[ $? -eq 0 && ${PIPESTATUS} -eq 0 ]] && return 0
     return 1
 }

@@ -255,3 +255,46 @@ function mysql_action__copy()
 
     echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }
+
+
+###
+# Synchronise une base de données depuis un serveur distant
+##
+function mysql_action__sync()
+{
+    logger_debug "mysql_action__sync ($@)"
+
+    # Charge la configuration du module
+    config_loadConfigModule "${OLIX_MODULE_NAME}"
+
+    # Affichage de l'aide
+    [ $# -lt 1 ] && module_mysql_usage_copy && core_exit 1
+    [[ "$1" == "help" ]] && module_mysql_usage_copy && core_exit 0
+
+    module_mysql_usage_getParams $@
+
+    module_mysql_isBaseExists "${OLIX_MODULE_MYSQL_PARAM1}"
+    [[ $? -ne 0 ]] && logger_error "La base '${OLIX_MODULE_MYSQL_PARAM1}' n'existe pas"
+
+    stdin_readConnexionServer "" "3306" "root"
+    stdin_readPassword "Mot de passe de connexion au serveur MySQL (${OLIX_STDIN_RETURN_HOST}) en tant que ${OLIX_STDIN_RETURN_USER}"
+    OLIX_STDIN_RETURN_PASS=${OLIX_STDIN_RETURN}
+
+    echo "OLIX_STDIN_RETURN_HOST=${OLIX_STDIN_RETURN_HOST}"
+    echo "OLIX_STDIN_RETURN_PORT=${OLIX_STDIN_RETURN_PORT}"
+    echo "OLIX_STDIN_RETURN_USER=${OLIX_STDIN_RETURN_USER}"
+    echo "OLIX_STDIN_RETURN_PASS=${OLIX_STDIN_RETURN_PASS}"
+    module_mysql_usage_readDatabase "${OLIX_STDIN_RETURN_HOST}" "${OLIX_STDIN_RETURN_PORT}" "${OLIX_STDIN_RETURN_USER}" "${OLIX_STDIN_RETURN_PASS}"
+    OLIX_MODULE_MYSQL_PARAM2=${OLIX_STDIN_RETURN}
+
+    if [[ -n ${OLIX_MODULE_MYSQL_PARAM2} ]]; then
+
+        module_mysql_synchronizeDatabase \
+            "--host=${OLIX_STDIN_RETURN_HOST} --port=${OLIX_STDIN_RETURN_PORT} --user=${OLIX_STDIN_RETURN_USER} --password=${OLIX_STDIN_RETURN_PASS}" \
+            "${OLIX_MODULE_MYSQL_PARAM2}" \
+            "--host=${OLIX_MODULE_MYSQL_HOST} --port=${OLIX_MODULE_MYSQL_PORT} --user=${OLIX_MODULE_MYSQL_USER} --password=${OLIX_MODULE_MYSQL_PASS}" \
+            "${OLIX_MODULE_MYSQL_PARAM1}"
+        [[ $? -ne 0 ]] && logger_error "Echec de la synchronisation de '${OLIX_MODULE_MYSQL_PARAM2}' vers '${OLIX_MODULE_MYSQL_PARAM1}'"
+        echo -e "${Cvert}Action terminée avec succès${CVOID}"
+    fi
+}
