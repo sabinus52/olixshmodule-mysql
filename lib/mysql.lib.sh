@@ -60,7 +60,7 @@ function module_mysql_createRoleOliX()
 function module_mysql_getDbUrl()
 {
     if [[ $# -eq 0 ]]; then
-        echo -n "--host=${OLIX_MODULE_MYSQL_HOST} --port=${OLIX_MODULE_MYSQL_PORT} --user=${OLIX_MODULE_MYSQL_USER} --password=${OLIX_MODULE_MYSQL_PASSWORD}"
+        echo -n "--host=${OLIX_MODULE_MYSQL_HOST} --port=${OLIX_MODULE_MYSQL_PORT} --user=${OLIX_MODULE_MYSQL_USER} --password=${OLIX_MODULE_MYSQL_PASS}"
     else
         if [[ -z $4 ]]; then
             echo "--host=$1 --port=$2 --user=$3 -p"

@@ -2,7 +2,7 @@
 # Module de la gestion des bases MySQL
 # ==============================================================================
 # OLIX_MODULE_MYSQL_USER     : Nom de l'utilisateur MySQL
-# OLIX_MODULE_MYSQL_PASSWORD : Mot de passe de l'utilisateur
+# OLIX_MODULE_MYSQL_PASS : Mot de passe de l'utilisateur
 # ------------------------------------------------------------------------------
 # @package olixsh
 # @module mysql
@@ -132,13 +132,15 @@ function mysql_action__dump()
     [ $# -lt 2 ] && module_mysql_usage_dump && core_exit 1
     [[ "$1" == "help" ]] && module_mysql_usage_dump && core_exit 0
 
+    module_mysql_usage_getParams $@
+
     # Vérifie les paramètres
-    module_mysql_isBaseExists "$1"
-    [[ $? -ne 0 ]] && logger_error "La base '$1' n'existe pas"
-    filesystem_isCreateFile "$2"
-    [[ $? -ne 0 ]] && logger_error "Impossible de créer le fichier '$2'"
+    module_mysql_isBaseExists "${OLIX_MODULE_MYSQL_PARAM1}"
+    [[ $? -ne 0 ]] && logger_error "La base '${OLIX_MODULE_MYSQL_PARAM1}' n'existe pas"
+    filesystem_isCreateFile "${OLIX_MODULE_MYSQL_PARAM2}"
+    [[ $? -ne 0 ]] && logger_error "Impossible de créer le fichier '${OLIX_MODULE_MYSQL_PARAM2}'"
     
-    module_mysql_dumpDatabase $1 $2
+    module_mysql_dumpDatabase ${OLIX_MODULE_MYSQL_PARAM1} ${OLIX_MODULE_MYSQL_PARAM2}
     [[ $? -ne 0 ]] && logger_error "Echec du dump"
 
     [[ $? -eq 0 ]] && echo -e "${Cvert}Action terminée avec succès${CVOID}"
@@ -159,12 +161,14 @@ function mysql_action__restore()
     [ $# -lt 2 ] && module_mysql_usage_restore && core_exit 1
     [[ "$1" == "help" ]] && module_mysql_usage_restore && core_exit 0
 
+    module_mysql_usage_getParams $@
+
     # Vérifie les paramètres
-    [[ ! -r $1 ]] && logger_error "Le fichier '$1' est absent ou inaccessible"
-    module_mysql_isBaseExists "$2"
-    [[ $? -ne 0 ]] && logger_error "La base '$2' n'existe pas"
+    [[ ! -r ${OLIX_MODULE_MYSQL_PARAM1} ]] && logger_error "Le fichier '${OLIX_MODULE_MYSQL_PARAM1}' est absent ou inaccessible"
+    module_mysql_isBaseExists "${OLIX_MODULE_MYSQL_PARAM2}"
+    [[ $? -ne 0 ]] && logger_error "La base '${OLIX_MODULE_MYSQL_PARAM2}' n'existe pas"
     
-    module_mysql_restoreDatabase $1 $2
+    module_mysql_restoreDatabase ${OLIX_MODULE_MYSQL_PARAM1} ${OLIX_MODULE_MYSQL_PARAM2}
     [[ $? -ne 0 ]] && logger_error "Echec de la restauration"
 
     [[ $? -eq 0 ]] && echo -e "${Cvert}Action terminée avec succès${CVOID}"

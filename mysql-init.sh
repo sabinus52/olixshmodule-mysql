@@ -69,8 +69,8 @@ function mysql_init__main()
 
     # Mot de passe
     stdin_readDoublePassword "Mot de passe du serveur MySQL"
-    logger_debug "OLIX_MODULE_MYSQL_PASSWORD=${OLIX_STDIN_RETURN}"
-    OLIX_MODULE_MYSQL_PASSWORD=${OLIX_STDIN_RETURN}
+    logger_debug "OLIX_MODULE_MYSQL_PASS=${OLIX_STDIN_RETURN}"
+    OLIX_MODULE_MYSQL_PASS=${OLIX_STDIN_RETURN}
 
     # Ecriture du fichier de configuration
     logger_info "Création du fichier de configuration ${FILECONF}"
@@ -79,9 +79,9 @@ function mysql_init__main()
     echo "OLIX_MODULE_MYSQL_HOST=${OLIX_MODULE_MYSQL_HOST}" >> ${FILECONF}
     echo "OLIX_MODULE_MYSQL_PORT=${OLIX_MODULE_MYSQL_PORT}" >> ${FILECONF}
     echo "OLIX_MODULE_MYSQL_USER=${OLIX_MODULE_MYSQL_USER}" >> ${FILECONF}
-    echo "OLIX_MODULE_MYSQL_PASSWORD=${OLIX_MODULE_MYSQL_PASSWORD}" >> ${FILECONF}
+    echo "OLIX_MODULE_MYSQL_PASS=${OLIX_MODULE_MYSQL_PASS}" >> ${FILECONF}
 
     # Création du rôle
-    module_mysql_createRoleOliX "${OLIX_MODULE_MYSQL_HOST}" "${OLIX_MODULE_MYSQL_PORT}" "${OLIX_MODULE_MYSQL_USER}" "${OLIX_MODULE_MYSQL_PASSWORD}"
+    module_mysql_createRoleOliX "${OLIX_MODULE_MYSQL_HOST}" "${OLIX_MODULE_MYSQL_PORT}" "${OLIX_MODULE_MYSQL_USER}" "${OLIX_MODULE_MYSQL_PASS}"
     [[ $? -ne 0 ]] && logger_error "Impossible de créer le rôle '${OLIX_MODULE_MYSQL_USER}' dans le serveur MySQL"
 }
