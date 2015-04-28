@@ -26,7 +26,7 @@ _olixsh_module()
             _olixsh_module_restore
             return 0
             ;;
-        drop)
+        drop|copy)
             _olixsh_module_drop
             return 0
             ;;
@@ -41,7 +41,7 @@ _olixsh_module_actions()
 {
     local CUR ACTIONS
     CUR="${COMP_WORDS[COMP_CWORD]}"
-    ACTIONS="init dump restore sync create drop help"
+    ACTIONS="init dump restore sync create drop copy help"
 
     COMPREPLY=( $(compgen -W "${ACTIONS}" -- ${CUR}) )
 }

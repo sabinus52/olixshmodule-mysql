@@ -24,8 +24,10 @@ function module_mysql_usage_main()
     echo -e "${Cjaune} init    ${CVOID}  : Initialisation du module"
     echo -e "${Cjaune} dump    ${CVOID}  : Fait un dump d'une base de données"
     echo -e "${Cjaune} restore ${CVOID}  : Restauration d'une base de données"
-    echo -e "${Cjaune} sync    ${CVOID}  : Synchronisation d'une base à partir d'un serveur distant"
     echo -e "${Cjaune} create  ${CVOID}  : Création d'une base de données"
+    echo -e "${Cjaune} drop    ${CVOID}  : Suppréssion d'une base de données"
+    echo -e "${Cjaune} copy    ${CVOID}  : Copy d'une base de données vers une autre"
+    echo -e "${Cjaune} sync    ${CVOID}  : Synchronisation d'une base à partir d'un serveur distant"
     echo -e "${Cjaune} help    ${CVOID}  : Affiche cet écran"
 }
 
@@ -115,6 +117,27 @@ function module_mysql_usage_drop()
     echo -e "Suppréssion d'une base de données MySQL"
     echo
     echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}drop${CVOID} ${CBLANC}[BASE]${CVOID}"
+    echo
+    echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
+    for I in $(module_mysql_getListDatabases); do
+        echo -en "${Cjaune} ${I} ${CVOID}"
+        stdout_strpad "${I}" 20 " "
+        echo " : Base de de données ${I}"
+    done
+}
+
+
+###
+# Usage de l'action COPY
+##
+function module_mysql_usage_copy()
+{
+    logger_debug "module_mysql_usage_copy ()"
+    stdout_printVersion
+    echo
+    echo -e "Copie d'une base de données MySQL vers une autre"
+    echo
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}copy${CVOID} ${CBLANC}[BASE source] [BASE destination]${CVOID}"
     echo
     echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
     for I in $(module_mysql_getListDatabases); do

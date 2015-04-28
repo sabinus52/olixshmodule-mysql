@@ -164,6 +164,7 @@ function module_mysql_restoreDatabase()
 # @param $3 : Port du serveur
 # @param $4 : Utilisateur mysql
 # @param $5 : Mot de passe
+# @return bool
 ##
 function module_mysql_createDatabase()
 {
@@ -185,6 +186,7 @@ function module_mysql_createDatabase()
 # @param $3 : Port du serveur
 # @param $4 : Utilisateur mysql
 # @param $5 : Mot de passe
+# @return bool
 ##
 function module_mysql_dropDatabase()
 {
@@ -196,4 +198,27 @@ function module_mysql_dropDatabase()
     mysql ${PARAM} ${URL} --execute="DROP DATABASE IF EXISTS $1;"
     [[ $? -ne 0 ]] && return 1
     return 0
+}
+
+
+###
+# Copie une base de données vers une autre une base distante vers une localement
+# @param $1  : Nom de la base source
+# @param $2  : Nom de la base destination
+# @param $3  : Host du serveur MySQL
+# @param $4  : Port du serveur
+# @param $5  : Utilisateur mysql
+# @param $6  : Mot de passe
+# @return bool
+##
+function module_mysql_copyDatabase()
+{
+    local URL=$(module_mysql_getDbUrl $3 $4 $5 $6)
+    logger_debug "module_mysql_copyDatabase ($1, $2, ${URL})"
+
+    local PARAM
+    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
+    mysqldump ${PARAM} --opt ${URL} $1 | mysql ${URL} $2
+    [[ $? -eq 0 && ${PIPESTATUS} -eq 0 ]] && return 0
+    return 1
 }
