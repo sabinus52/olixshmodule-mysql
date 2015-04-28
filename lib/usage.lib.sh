@@ -81,7 +81,7 @@ function module_mysql_usage_restore()
     echo -en "${CBLANC} --user=[${OLIX_MODULE_MYSQL_USER}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_USER}" 11 " "; echo " : User du serveur MYSQL"
     echo -en "${CBLANC} --pass=   ${CVOID}"; stdout_strpad "" 11 " "; echo " : Password du serveur MYSQL"
     echo
-    echo -e "${CJAUNE}Restauration d'une base de données à partir d'un dump${CVOID} :"
+    echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
     for I in $(module_mysql_getListDatabases); do
         echo -en "${Cjaune} ${I} ${CVOID}"
         stdout_strpad "${I}" 20 " "
@@ -101,6 +101,27 @@ function module_mysql_usage_create()
     echo -e "Création d'une base de données MySQL"
     echo
     echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}create${CVOID} ${CBLANC}[BASE]${CVOID}"
+}
+
+
+###
+# Usage de l'action DROP
+##
+function module_mysql_usage_drop()
+{
+    logger_debug "module_mysql_usage_drop ()"
+    stdout_printVersion
+    echo
+    echo -e "Suppréssion d'une base de données MySQL"
+    echo
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}drop${CVOID} ${CBLANC}[BASE]${CVOID}"
+    echo
+    echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
+    for I in $(module_mysql_getListDatabases); do
+        echo -en "${Cjaune} ${I} ${CVOID}"
+        stdout_strpad "${I}" 20 " "
+        echo " : Base de de données ${I}"
+    done
 }
 
 

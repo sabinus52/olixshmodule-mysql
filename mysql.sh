@@ -54,7 +54,7 @@ olixmod_list()
         echo -n ""
         return 0
     fi
-    if [[ -z ${OLIX_MODULE_MYSQL_PASSWORD} ]]; then
+    if [[ -z ${OLIX_MODULE_MYSQL_PASS} ]]; then
         echo -n ""
         return 0
     fi
@@ -195,4 +195,35 @@ function mysql_action__create()
     [[ $? -ne 0 ]] && logger_error "Echec de la création de la base '${OLIX_MODULE_MYSQL_PARAM1}'"
 
     echo -e "${Cvert}Action terminée avec succès${CVOID}"
+}
+
+
+###
+# Supprime une base de données
+##
+function mysql_action__drop()
+{
+    logger_debug "mysql_action__drop ($@)"
+
+    # Charge la configuration du module
+    config_loadConfigModule "${OLIX_MODULE_NAME}"
+
+    # Affichage de l'aide
+    [ $# -lt 1 ] && module_mysql_usage_drop && core_exit 1
+    [[ "$1" == "help" ]] && module_mysql_usage_drop && core_exit 0
+
+    module_mysql_usage_getParams $@
+
+    module_mysql_isBaseExists "${OLIX_MODULE_MYSQL_PARAM1}"
+    [[ $? -ne 0 ]] && logger_error "La base '${OLIX_MODULE_MYSQL_PARAM1}' n'existe pas"
+
+    echo -e "${CJAUNE}ATTENTION !!! Ceci va supprimer la base et son contenu${CVOID}"
+    stdin_readYesOrNo "Confirmer" false
+    if [[ ${OLIX_STDIN_RETURN} == true ]]; then
+        
+        module_mysql_dropDatabase ${OLIX_MODULE_MYSQL_PARAM1}
+        [[ $? -ne 0 ]] && logger_error "Echec de la suppréssion de la base '${OLIX_MODULE_MYSQL_PARAM1}'"
+
+        echo -e "${Cvert}Action terminée avec succès${CVOID}"
+    fi
 }

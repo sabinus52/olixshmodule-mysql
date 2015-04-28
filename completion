@@ -26,6 +26,10 @@ _olixsh_module()
             _olixsh_module_restore
             return 0
             ;;
+        drop)
+            _olixsh_module_drop
+            return 0
+            ;;
     esac
 }
 
@@ -37,7 +41,7 @@ _olixsh_module_actions()
 {
     local CUR ACTIONS
     CUR="${COMP_WORDS[COMP_CWORD]}"
-    ACTIONS="init dump restore sync create help"
+    ACTIONS="init dump restore sync create drop help"
 
     COMPREPLY=( $(compgen -W "${ACTIONS}" -- ${CUR}) )
 }
@@ -78,3 +82,14 @@ _olixsh_module_restore()
     COMPREPLY=( $(compgen -f -- ${cur}) )
 }
 
+
+###
+# Liste des packages de l'action DROP du module MySQL
+##
+_olixsh_module_drop()
+{
+    local CUR BASES
+    CUR="${COMP_WORDS[COMP_CWORD]}"
+
+    COMPREPLY=( $(compgen -W "$(${OLIX_ROOT_COMP}/olixsh mysql --list)" -- ${cur}) )
+}

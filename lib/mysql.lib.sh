@@ -176,3 +176,24 @@ function module_mysql_createDatabase()
     [[ $? -ne 0 ]] && return 1
     return 0
 }
+
+
+###
+# Supprime une base de données
+# @param $1 : Nom de la base à créer
+# @param $2 : Host du serveur MySQL
+# @param $3 : Port du serveur
+# @param $4 : Utilisateur mysql
+# @param $5 : Mot de passe
+##
+function module_mysql_dropDatabase()
+{
+    local URL=$(module_mysql_getDbUrl $2 $3 $4 $5)
+    logger_debug "module_mysql_dropDatabase ($1, ${URL})"
+
+    local PARAM
+    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
+    mysql ${PARAM} ${URL} --execute="DROP DATABASE IF EXISTS $1;"
+    [[ $? -ne 0 ]] && return 1
+    return 0
+}
