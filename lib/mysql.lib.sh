@@ -242,3 +242,50 @@ function module_mysql_synchronizeDatabase()
     [[ $? -eq 0 && ${PIPESTATUS} -eq 0 ]] && return 0
     return 1
 }
+
+
+###
+# Fait une sauvegarde d'une base MySQL
+# @param $1 : Nom de la base
+##
+function module_mysql_backupDatabase()
+{
+    logger_debug "module_mysql_backupDatabase ($1)"
+
+    if ! module_mysql_isBaseExists "${I}"; then
+        logger_warning "La base '${I}' n'existe pas"
+        return 1
+    fi
+
+    local DUMP="${OLIX_MODULE_MYSQL_BACKUP_DIR}/dump-$1-${OLIX_SYSTEM_DATE}.sql"
+    logger_info "Sauvegarde baseMySQL ($1) -> ${DUMP}"
+
+    local START=${SECONDS}
+
+    module_mysql_dumpDatabase $1 ${DUMP}
+    stdout_printMessageReturn $? "Sauvegarde de la base" "$(filesystem_getSizeFileHuman ${DUMP})" "$((SECONDS-START))"
+    report_printMessageReturn $? "Sauvegarde de la base" "$(filesystem_getSizeFileHuman ${DUMP})" "$((SECONDS-START))"
+    [[ $? -ne 0 ]] && report_warning && logger_warning && return 1
+
+    if [[ -n ${OLIX_MODULE_MYSQL_BACKUP_COMPRESS} ]]; then
+        backup_compress "${OLIX_MODULE_MYSQL_BACKUP_COMPRESS}" "${DUMP}"
+        [[ $? -ne 0 ]] && return 1
+        DUMP=${OLIX_FUNCTION_RESULT}
+    fi
+
+    backup_purge "${OLIX_MODULE_MYSQL_BACKUP_DIR}" "dump-$I-*" "${OLIX_MODULE_MYSQL_BACKUP_PURGE}"
+    [[ $? -ne 0 ]] && return 1
+
+    return 0
+    [[ $? -ne 0 ]] && logger_warning "Echec du dump de la base '${I}' vers '${DUMP}'" && return 1
+    
+    if [[ -n ${OLIX_MODULE_MYSQL_BACKUP_COMPRESS} ]]; then
+            file_compressBZ2 ${DUMP}
+            [[ $? -ne 0 ]] && "Echec de la compression du dump '${DUMP}'" && continue
+        fi
+
+
+    
+
+    return 0
+}

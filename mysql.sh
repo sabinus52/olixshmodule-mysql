@@ -95,6 +95,7 @@ olixmod_main()
     # Librairies necessaires
     source lib/stdin.lib.sh
     source lib/filesystem.lib.sh
+    source lib/file.lib.sh
     source modules/mysql/lib/mysql.lib.sh
     source modules/mysql/lib/usage.lib.sh
 
@@ -280,10 +281,6 @@ function mysql_action__sync()
     stdin_readPassword "Mot de passe de connexion au serveur MySQL (${OLIX_STDIN_RETURN_HOST}) en tant que ${OLIX_STDIN_RETURN_USER}"
     OLIX_STDIN_RETURN_PASS=${OLIX_STDIN_RETURN}
 
-    echo "OLIX_STDIN_RETURN_HOST=${OLIX_STDIN_RETURN_HOST}"
-    echo "OLIX_STDIN_RETURN_PORT=${OLIX_STDIN_RETURN_PORT}"
-    echo "OLIX_STDIN_RETURN_USER=${OLIX_STDIN_RETURN_USER}"
-    echo "OLIX_STDIN_RETURN_PASS=${OLIX_STDIN_RETURN_PASS}"
     module_mysql_usage_readDatabase "${OLIX_STDIN_RETURN_HOST}" "${OLIX_STDIN_RETURN_PORT}" "${OLIX_STDIN_RETURN_USER}" "${OLIX_STDIN_RETURN_PASS}"
     OLIX_MODULE_MYSQL_PARAM2=${OLIX_STDIN_RETURN}
 
@@ -297,4 +294,56 @@ function mysql_action__sync()
         [[ $? -ne 0 ]] && logger_error "Echec de la synchronisation de '${OLIX_MODULE_MYSQL_PARAM2}' vers '${OLIX_MODULE_MYSQL_PARAM1}'"
         echo -e "${Cvert}Action terminée avec succès${CVOID}"
     fi
+}
+
+
+###
+# Fait un backup complet des bases MySQL
+##
+function mysql_action__backup()
+{
+    logger_debug "mysql_action__backup ($@)"
+
+    # Charge la configuration du module
+    config_loadConfigModule "${OLIX_MODULE_NAME}"
+
+    # Affichage de l'aide
+    #[ $# -lt 2 ] && module_mysql_usage_backup && core_exit 1
+    [[ "$1" == "help" ]] && module_mysql_usage_backup && core_exit 0
+
+    module_mysql_usage_getParams $@
+
+    # Si aucune base définie, on récupère toutes les bases
+    if [[ -z ${OLIX_MODULE_MYSQL_BACKUP_BASES} ]]; then
+        OLIX_MODULE_MYSQL_BACKUP_BASES=$(module_mysql_getListDatabases)
+    fi
+    if [[ ! -d ${OLIX_MODULE_MYSQL_BACKUP_DIR} ]]; then
+        logger_warning "Création du dossier inexistant OLIX_MODULE_MYSQL_BACKUP_DIR: \"${OLIX_MODULE_MYSQL_BACKUP_DIR}\""
+        mkdir ${OLIX_MODULE_MYSQL_BACKUP_DIR} || logger_error "Impossible de créer OLIX_MODULE_MYSQL_BACKUP_DIR: \"${OLIX_MODULE_MYSQL_BACKUP_DIR}\""
+    elif [[ ! -w ${OLIX_MODULE_MYSQL_BACKUP_DIR} ]]; then
+        logger_error "Le dossier '${OLIX_MODULE_MYSQL_BACKUP_DIR}' n'a pas les droits en écriture"
+    fi
+
+    source lib/backup.lib.sh
+
+    # Mise en place du rapport
+    source lib/report.lib.sh
+    report_initialize   "${OLIX_MODULE_MYSQL_BACKUP_REPORT}" \
+                        "${OLIX_MODULE_MYSQL_BACKUP_DIR}/rapport-dump-mysql-${OLIX_SYSTEM_DATE}" \
+                        "${OLIX_MODULE_MYSQL_BACKUP_EMAIL}"
+
+    stdout_printHead1 "Sauvegarde des bases MySQL %s le %s à %s" "${HOSTNAME}" "${OLIX_SYSTEM_DATE}" "${OLIX_SYSTEM_TIME}"
+    report_printHead1 "Sauvegarde des bases MySQL %s le %s à %s" "${HOSTNAME}" "${OLIX_SYSTEM_DATE}" "${OLIX_SYSTEM_TIME}"
+
+
+    for I in ${OLIX_MODULE_MYSQL_BACKUP_BASES}; do
+        module_mysql_backupDatabase ${I}
+    done
+
+    stdout_print
+    stdout_printLine
+    stdout_print "${Cvert}Sauvegarde terminée en $(core_getTimeExec) secondes${CVOID}"
+    report_print
+    report_printLine
+    report_print "Sauvegarde terminée en $(core_getTimeExec) secondes"
 }

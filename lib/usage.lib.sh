@@ -28,6 +28,7 @@ function module_mysql_usage_main()
     echo -e "${Cjaune} drop    ${CVOID}  : Suppréssion d'une base de données"
     echo -e "${Cjaune} copy    ${CVOID}  : Copy d'une base de données vers une autre"
     echo -e "${Cjaune} sync    ${CVOID}  : Synchronisation d'une base à partir d'un serveur distant"
+    echo -e "${Cjaune} backup  ${CVOID}  : Réalisation d'une sauvegarde des bases MySQL avec rapport pour tâches planifiées"
     echo -e "${Cjaune} help    ${CVOID}  : Affiche cet écran"
 }
 
@@ -49,12 +50,6 @@ function module_mysql_usage_dump()
     echo -en "${CBLANC} --port=[${OLIX_MODULE_MYSQL_PORT}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_PORT}" 11 " "; echo " : Port du serveur MYSQL"
     echo -en "${CBLANC} --user=[${OLIX_MODULE_MYSQL_USER}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_USER}" 11 " "; echo " : User du serveur MYSQL"
     echo -en "${CBLANC} --pass=   ${CVOID}"; stdout_strpad "" 11 " "; echo " : Password du serveur MYSQL"
-    echo
-    echo -e "${Ccyan}OPTIONS${CVOID}"
-    echo -e "${CBLANC} --host=[localhost]   ${CVOID} : Host du serveur MYSQL"
-    echo -e "${CBLANC} --port=[3306]        ${CVOID} : Port du serveur MYSQL"
-    echo -e "${CBLANC} --user=[root]        ${CVOID} : User du serveur MYSQL"
-    echo -e "${CBLANC} --pass=              ${CVOID} : Password du serveur MYSQL"
     echo
     echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
     for I in $(module_mysql_getListDatabases); do
@@ -170,6 +165,38 @@ function module_mysql_usage_sync()
 
 
 ###
+# Usage de l'action BACKUP
+##
+function module_mysql_usage_backup()
+{
+    logger_debug "module_mysql_usage_backup ()"
+    stdout_printVersion
+    echo
+    echo -e "Réalisation d'une sauvegarde des bases MySQL avec rapport pour tâches planifiées"
+    echo
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}backup${CVOID} ${CBLANC}[BASES] [OPTIONS]${CVOID}"
+    echo
+    echo -e "${Ccyan}OPTIONS${CVOID}"
+    echo -en "${CBLANC} --host=[${OLIX_MODULE_MYSQL_HOST}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_HOST}" 11 " "; echo " : Host du serveur MYSQL"
+    echo -en "${CBLANC} --port=[${OLIX_MODULE_MYSQL_PORT}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_PORT}" 11 " "; echo " : Port du serveur MYSQL"
+    echo -en "${CBLANC} --user=[${OLIX_MODULE_MYSQL_USER}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_USER}" 11 " "; echo " : User du serveur MYSQL"
+    echo -en "${CBLANC} --pass=   ${CVOID}"; stdout_strpad "" 11 " "; echo " : Password du serveur MYSQL"
+    echo -en "${CBLANC} --dir=[${OLIX_MODULE_MYSQL_PATH_DUMP}] ${CVOID}"; stdout_strpad "" 11 " "; echo " : Chemin de stockage des backups"
+    echo -en "${CBLANC} --purge=5 ${CVOID}"; stdout_strpad "" 11 " "; echo " : Nombre de jours avant la purge des anciens backups"
+    echo -en "${CBLANC} --gz|--bz2 ${CVOID}"; stdout_strpad "" 11 " "; echo " : Compression du dump au format gzip ou bzip2"
+    echo -en "${CBLANC} --html ${CVOID}"; stdout_strpad "" 11 " "; echo " : Rapport au format HTML sinon au format TEXT par défaut"
+    echo -en "${CBLANC} --email=[email] ${CVOID}"; stdout_strpad "" 11 " "; echo " : Envoi du rapport à cette adresse"
+    echo
+    echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
+    for I in $(module_mysql_getListDatabases); do
+        echo -en "${Cjaune} ${I} ${CVOID}"
+        stdout_strpad "${I}" 20 " "
+        echo " : Base de de données ${I}"
+    done
+}
+
+
+###
 # Retourne les paramètres de la commandes en fonction des options
 # @param $@ : Liste des paramètres
 ##
@@ -196,19 +223,47 @@ function module_mysql_usage_getParams()
                 IFS='=' read -ra PARAM <<< "$1"
                 OLIX_MODULE_MYSQL_PASS=${PARAM[1]}
                 ;;
+            --dir=*)
+                IFS='=' read -ra PARAM <<< "$1"
+                OLIX_MODULE_MYSQL_BACKUP_DIR=${PARAM[1]}
+                ;;
+            --purge=*)
+                IFS='=' read -ra PARAM <<< "$1"
+                OLIX_MODULE_MYSQL_BACKUP_PURGE=${PARAM[1]}
+                ;;
+            --gz|--bz2)
+                OLIX_MODULE_MYSQL_BACKUP_COMPRESS=${1/--/}
+                ;;
+            --html)
+                OLIX_MODULE_MYSQL_BACKUP_REPORT="HTML"
+                ;;
+            --email=*)
+                IFS='=' read -ra PARAM <<< "$1"
+                OLIX_MODULE_MYSQL_BACKUP_EMAIL=${PARAM[1]}
+                ;;
             *)
+                OLIX_MODULE_MYSQL_BACKUP_BASES="${OLIX_MODULE_MYSQL_BACKUP_BASES} $1"
                 [[ -n ${OLIX_MODULE_MYSQL_PARAM1} ]] && OLIX_MODULE_MYSQL_PARAM2=$1
                 [[ -z ${OLIX_MODULE_MYSQL_PARAM1} ]] && OLIX_MODULE_MYSQL_PARAM1=$1
                 ;;
         esac
         shift
     done
+    config_require "OLIX_MODULE_MYSQL_BACKUP_DIR" "/tmp"
+    config_require "OLIX_MODULE_MYSQL_BACKUP_PURGE" "5"
+    config_require "OLIX_MODULE_MYSQL_BACKUP_REPORT" "TEXT"
     logger_debug "OLIX_MODULE_MYSQL_HOST=${OLIX_MODULE_MYSQL_HOST}"
     logger_debug "OLIX_MODULE_MYSQL_PORT=${OLIX_MODULE_MYSQL_PORT}"
     logger_debug "OLIX_MODULE_MYSQL_USER=${OLIX_MODULE_MYSQL_USER}"
     logger_debug "OLIX_MODULE_MYSQL_PASS=${OLIX_MODULE_MYSQL_PASS}"
     logger_debug "OLIX_MODULE_MYSQL_PARAM1=${OLIX_MODULE_MYSQL_PARAM1}"
     logger_debug "OLIX_MODULE_MYSQL_PARAM2=${OLIX_MODULE_MYSQL_PARAM2}"
+    logger_debug "OLIX_MODULE_MYSQL_BACKUP_DIR=${OLIX_MODULE_MYSQL_BACKUP_DIR}"
+    logger_debug "OLIX_MODULE_MYSQL_BACKUP_PURGE=${OLIX_MODULE_MYSQL_BACKUP_PURGE}"
+    logger_debug "OLIX_MODULE_MYSQL_BACKUP_COMPRESS=${OLIX_MODULE_MYSQL_BACKUP_COMPRESS}"
+    logger_debug "OLIX_MODULE_MYSQL_BACKUP_REPORT=${OLIX_MODULE_MYSQL_BACKUP_REPORT}"
+    logger_debug "OLIX_MODULE_MYSQL_BACKUP_EMAIL=${OLIX_MODULE_MYSQL_BACKUP_EMAIL}"
+    logger_debug "OLIX_MODULE_MYSQL_BACKUP_BASES=${OLIX_MODULE_MYSQL_BACKUP_BASES}"
 }
 
 
