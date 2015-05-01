@@ -78,7 +78,6 @@ olixmod_list()
 olixmod_init()
 {
     logger_debug "module_mysql__olixmod_init (null)"
-    source lib/stdin.lib.sh
     source modules/mysql/lib/mysql.lib.sh
     source modules/mysql/lib/action.lib.sh
     module_mysql_action_init $@
