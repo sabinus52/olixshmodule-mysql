@@ -18,7 +18,7 @@ function module_mysql_usage_main()
     echo
     echo -e "Gestion des bases de données MySQL (sauvegarde, restauration, ...)"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}[ACTION]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}ACTION${CVOID}"
     echo
     echo -e "${CJAUNE}Liste des ACTIONS disponibles${CVOID} :"
     echo -e "${Cjaune} init    ${CVOID}  : Initialisation du module"
@@ -43,13 +43,13 @@ function module_mysql_usage_dump()
     echo
     echo -e "Faire un dump d'une base de données MySQL"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}dump${CVOID} ${CBLANC}[BASE] [dumpfile] [OPTIONS]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}dump${CVOID} ${CBLANC}base dumpfile [OPTIONS]${CVOID}"
     echo
     echo -e "${Ccyan}OPTIONS${CVOID}"
-    echo -en "${CBLANC} --host=[${OLIX_MODULE_MYSQL_HOST}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_HOST}" 11 " "; echo " : Host du serveur MYSQL"
-    echo -en "${CBLANC} --port=[${OLIX_MODULE_MYSQL_PORT}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_PORT}" 11 " "; echo " : Port du serveur MYSQL"
-    echo -en "${CBLANC} --user=[${OLIX_MODULE_MYSQL_USER}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_USER}" 11 " "; echo " : User du serveur MYSQL"
-    echo -en "${CBLANC} --pass=   ${CVOID}"; stdout_strpad "" 11 " "; echo " : Password du serveur MYSQL"
+    echo -en "${CBLANC} --host=${OLIX_MODULE_MYSQL_HOST} ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_HOST}" 13 " "; echo " : Host du serveur MYSQL"
+    echo -en "${CBLANC} --port=${OLIX_MODULE_MYSQL_PORT} ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_PORT}" 13 " "; echo " : Port du serveur MYSQL"
+    echo -en "${CBLANC} --user=${OLIX_MODULE_MYSQL_USER} ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_USER}" 13 " "; echo " : User du serveur MYSQL"
+    echo -en "${CBLANC} --pass= ${CVOID}"; stdout_strpad "" 13 " "; echo " : Password du serveur MYSQL"
     echo
     echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
     for I in $(module_mysql_getListDatabases); do
@@ -70,13 +70,13 @@ function module_mysql_usage_restore()
     echo
     echo -e "Restauration d'une base de données MySQL à partir d'un fichier de dump"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}restore${CVOID} ${CBLANC}[dumpfile] [BASE]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}restore${CVOID} ${CBLANC}dumpfile base [OPTIONS]${CVOID}"
     echo
     echo -e "${Ccyan}OPTIONS${CVOID}"
-    echo -en "${CBLANC} --host=[${OLIX_MODULE_MYSQL_HOST}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_HOST}" 11 " "; echo " : Host du serveur MYSQL"
-    echo -en "${CBLANC} --port=[${OLIX_MODULE_MYSQL_PORT}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_PORT}" 11 " "; echo " : Port du serveur MYSQL"
-    echo -en "${CBLANC} --user=[${OLIX_MODULE_MYSQL_USER}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_USER}" 11 " "; echo " : User du serveur MYSQL"
-    echo -en "${CBLANC} --pass=   ${CVOID}"; stdout_strpad "" 11 " "; echo " : Password du serveur MYSQL"
+    echo -en "${CBLANC} --host=${OLIX_MODULE_MYSQL_HOST} ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_HOST}" 13 " "; echo " : Host du serveur MYSQL"
+    echo -en "${CBLANC} --port=${OLIX_MODULE_MYSQL_PORT} ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_PORT}" 13 " "; echo " : Port du serveur MYSQL"
+    echo -en "${CBLANC} --user=${OLIX_MODULE_MYSQL_USER} ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_USER}" 13 " "; echo " : User du serveur MYSQL"
+    echo -en "${CBLANC} --pass= ${CVOID}"; stdout_strpad "" 13 " "; echo " : Password du serveur MYSQL"
     echo
     echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
     for I in $(module_mysql_getListDatabases); do
@@ -97,7 +97,7 @@ function module_mysql_usage_create()
     echo
     echo -e "Création d'une base de données MySQL"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}create${CVOID} ${CBLANC}[BASE]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}create${CVOID} ${CBLANC}base${CVOID}"
 }
 
 
@@ -111,7 +111,7 @@ function module_mysql_usage_drop()
     echo
     echo -e "Suppréssion d'une base de données MySQL"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}drop${CVOID} ${CBLANC}[BASE]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}drop${CVOID} ${CBLANC}base${CVOID}"
     echo
     echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
     for I in $(module_mysql_getListDatabases); do
@@ -132,7 +132,7 @@ function module_mysql_usage_copy()
     echo
     echo -e "Copie d'une base de données MySQL vers une autre"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}copy${CVOID} ${CBLANC}[BASE source] [BASE destination]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}copy${CVOID} ${CBLANC}base_source base_destination${CVOID}"
     echo
     echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
     for I in $(module_mysql_getListDatabases); do
@@ -153,7 +153,7 @@ function module_mysql_usage_sync()
     echo
     echo -e "Synchronisation d'une base à partir d'un serveur MySQL distant"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}sync${CVOID} ${CBLANC}[BASE destination]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}sync${CVOID} ${CBLANC}base_destination${CVOID}"
     echo
     echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
     for I in $(module_mysql_getListDatabases); do
@@ -174,18 +174,18 @@ function module_mysql_usage_backup()
     echo
     echo -e "Réalisation d'une sauvegarde des bases MySQL avec rapport pour tâches planifiées"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}backup${CVOID} ${CBLANC}[BASES] [OPTIONS]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}backup${CVOID} ${CBLANC}[base1..baseN] [OPTIONS]${CVOID}"
     echo
     echo -e "${Ccyan}OPTIONS${CVOID}"
-    echo -en "${CBLANC} --host=[${OLIX_MODULE_MYSQL_HOST}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_HOST}" 11 " "; echo " : Host du serveur MYSQL"
-    echo -en "${CBLANC} --port=[${OLIX_MODULE_MYSQL_PORT}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_PORT}" 11 " "; echo " : Port du serveur MYSQL"
-    echo -en "${CBLANC} --user=[${OLIX_MODULE_MYSQL_USER}] ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_USER}" 11 " "; echo " : User du serveur MYSQL"
-    echo -en "${CBLANC} --pass=   ${CVOID}"; stdout_strpad "" 11 " "; echo " : Password du serveur MYSQL"
-    echo -en "${CBLANC} --dir=[${OLIX_MODULE_MYSQL_PATH_DUMP}] ${CVOID}"; stdout_strpad "" 11 " "; echo " : Chemin de stockage des backups"
-    echo -en "${CBLANC} --purge=5 ${CVOID}"; stdout_strpad "" 11 " "; echo " : Nombre de jours avant la purge des anciens backups"
-    echo -en "${CBLANC} --gz|--bz2 ${CVOID}"; stdout_strpad "" 11 " "; echo " : Compression du dump au format gzip ou bzip2"
-    echo -en "${CBLANC} --html ${CVOID}"; stdout_strpad "" 11 " "; echo " : Rapport au format HTML sinon au format TEXT par défaut"
-    echo -en "${CBLANC} --email=[email] ${CVOID}"; stdout_strpad "" 11 " "; echo " : Envoi du rapport à cette adresse"
+    echo -en "${CBLANC} --host=${OLIX_MODULE_MYSQL_HOST} ${CVOID}"; stdout_strpad "--host=${OLIX_MODULE_MYSQL_HOST}" 30 " "; echo " : Host du serveur MYSQL"
+    echo -en "${CBLANC} --port=${OLIX_MODULE_MYSQL_PORT} ${CVOID}"; stdout_strpad "--port=${OLIX_MODULE_MYSQL_PORT}" 30 " "; echo " : Port du serveur MYSQL"
+    echo -en "${CBLANC} --user=${OLIX_MODULE_MYSQL_USER} ${CVOID}"; stdout_strpad "--user=${OLIX_MODULE_MYSQL_USER}" 30 " "; echo " : User du serveur MYSQL"
+    echo -en "${CBLANC} --pass= ${CVOID}"; stdout_strpad "--pass=" 30 " "; echo " : Password du serveur MYSQL"
+    echo -en "${CBLANC} --dir=${OLIX_MODULE_MYSQL_BACKUP_DIR} ${CVOID}"; stdout_strpad "--dir=${OLIX_MODULE_MYSQL_BACKUP_DIR}" 30 " "; echo " : Chemin de stockage des backups"
+    echo -en "${CBLANC} --purge=${OLIX_MODULE_MYSQL_BACKUP_PURGE} ${CVOID}"; stdout_strpad "--purge=${OLIX_MODULE_MYSQL_BACKUP_PURGE}" 30 " "; echo " : Nombre de jours avant la purge des anciens backups"
+    echo -en "${CBLANC} --gz|--bz2 ${CVOID}"; stdout_strpad "--gz|--bz2" 30 " "; echo " : Compression du dump au format gzip ou bzip2"
+    echo -en "${CBLANC} --html ${CVOID}"; stdout_strpad "--html" 30 " "; echo " : Rapport au format HTML sinon au format TEXT par défaut"
+    echo -en "${CBLANC} --email=name@domain.ltd ${CVOID}"; stdout_strpad "--email=name@domain.ltd" 30 " "; echo " : Envoi du rapport à cette adresse"
     echo
     echo -e "${CJAUNE}Liste des BASES disponibles${CVOID} :"
     for I in $(module_mysql_getListDatabases); do

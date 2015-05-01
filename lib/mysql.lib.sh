@@ -9,6 +9,7 @@
 
 ###
 # Test si MySQL est installé
+# @return bool
 ##
 function module_mysql_isInstalled()
 {
@@ -20,6 +21,7 @@ function module_mysql_isInstalled()
 
 ###
 # Test si MySQL est en execution
+# @return bool
 ##
 function module_mysql_isRunning()
 {
@@ -36,6 +38,7 @@ function module_mysql_isRunning()
 # @param $2 : Port du serveur
 # @param $3 : Nom du rôle
 # @param $4 : Mot de passe du rôle
+# @return bool
 ##
 function module_mysql_createRoleOliX()
 {
@@ -126,9 +129,11 @@ function module_mysql_dumpDatabase()
     local URL=$(module_mysql_getDbUrl $3 $4 $5 $6)
     logger_debug "module_mysql_dumpDatabase ($1, $2, ${URL})"
 
-    local PARAM
-    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
-    mysqldump ${PARAM} --opt ${URL} $1 > $2
+    if [[ ${OLIX_OPTION_VERBOSE} == true ]]; then
+        mysqldump --verbose --opt ${URL} $1 > $2
+    else
+        mysqldump --opt ${URL} $1 > $2 2> ${OLIX_LOGGER_FILE_ERR}
+    fi
     [[ $? -ne 0 ]] && return 1
     return 0
 }
@@ -149,9 +154,7 @@ function module_mysql_restoreDatabase()
     local URL=$(module_mysql_getDbUrl $3 $4 $5 $6)
     logger_debug "module_mysql_restoreDatabase ($1, $2, ${URL})"
 
-    local PARAM
-    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
-    mysql ${PARAM} ${URL} $2 < $1
+    mysql ${PARAM} ${URL} $2 < $1 2> ${OLIX_LOGGER_FILE_ERR}
     [[ $? -ne 0 ]] && return 1
     return 0
 }
@@ -171,9 +174,11 @@ function module_mysql_createDatabase()
     local URL=$(module_mysql_getDbUrl $2 $3 $4 $5)
     logger_debug "module_mysql_createDatabase ($1, ${URL})"
 
-    local PARAM
-    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
-    mysql ${PARAM} ${URL} --execute="CREATE DATABASE $1;"
+    if [[ ${OLIX_OPTION_VERBOSE} == true ]]; then
+        mysql --verbose ${URL}  --execute="CREATE DATABASE $1;"
+    else
+        mysql ${URL} --execute="CREATE DATABASE $1;" 2> ${OLIX_LOGGER_FILE_ERR}
+    fi
     [[ $? -ne 0 ]] && return 1
     return 0
 }
@@ -193,9 +198,11 @@ function module_mysql_dropDatabase()
     local URL=$(module_mysql_getDbUrl $2 $3 $4 $5)
     logger_debug "module_mysql_dropDatabase ($1, ${URL})"
 
-    local PARAM
-    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
-    mysql ${PARAM} ${URL} --execute="DROP DATABASE IF EXISTS $1;"
+    if [[ ${OLIX_OPTION_VERBOSE} == true ]]; then
+        mysql --verbose ${URL}  --execute="DROP DATABASE $1;"
+    else
+        mysql ${URL} --execute="DROP DATABASE $1;" 2> ${OLIX_LOGGER_FILE_ERR}
+    fi
     [[ $? -ne 0 ]] && return 1
     return 0
 }
@@ -216,9 +223,11 @@ function module_mysql_copyDatabase()
     local URL=$(module_mysql_getDbUrl $3 $4 $5 $6)
     logger_debug "module_mysql_copyDatabase ($1, $2, ${URL})"
 
-    local PARAM
-    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
-    mysqldump ${PARAM} --opt ${URL} $1 | mysql ${URL} $2
+    if [[ ${OLIX_OPTION_VERBOSE} == true ]]; then
+        mysqldump --verbose ${URL} --opt ${URL} $1 | mysql ${URL} $2
+    else
+        mysqldump --opt ${URL} $1 | mysql ${URL} $2 > ${OLIX_LOGGER_FILE_ERR} 2>&1
+    fi
     [[ $? -eq 0 && ${PIPESTATUS} -eq 0 ]] && return 0
     return 1
 }
@@ -236,9 +245,11 @@ function module_mysql_synchronizeDatabase()
 {
     logger_debug "module_mysql_synchronizeDatabase ($1, $2, $3, $4)"
 
-    local PARAM
-    [[ ${OLIX_OPTION_VERBOSE} == true ]] && PARAM="--verbose"
-    mysqldump ${PARAM} --opt $1 $2 | mysql $3 $4
+    if [[ ${OLIX_OPTION_VERBOSE} == true ]]; then
+        mysqldump --verbose ${URL} --opt $1 $2 | mysql $3 $4
+    else
+        mysqldump --opt ${URL} $1 $2 | mysql $3 $4 > ${OLIX_LOGGER_FILE_ERR} 2>&1
+    fi
     [[ $? -eq 0 && ${PIPESTATUS} -eq 0 ]] && return 0
     return 1
 }
@@ -247,13 +258,18 @@ function module_mysql_synchronizeDatabase()
 ###
 # Fait une sauvegarde d'une base MySQL
 # @param $1 : Nom de la base
+# @return bool
 ##
 function module_mysql_backupDatabase()
 {
     logger_debug "module_mysql_backupDatabase ($1)"
 
-    if ! module_mysql_isBaseExists "${I}"; then
-        logger_warning "La base '${I}' n'existe pas"
+    stdout_printHead2 "Sauvegarde de la base MySQL %s" "$1"
+    report_printHead2 "Sauvegarde de la base MySQL %s" "$1"
+
+    if ! module_mysql_isBaseExists "$1"; then
+        report_warning "La base '$1' n'existe pas"
+        logger_warning "La base '$1' n'existe pas"
         return 1
     fi
 
@@ -262,30 +278,17 @@ function module_mysql_backupDatabase()
 
     local START=${SECONDS}
 
-    module_mysql_dumpDatabase $1 ${DUMP}
+    module_mysql_dumpDatabase "$1" ${DUMP}
     stdout_printMessageReturn $? "Sauvegarde de la base" "$(filesystem_getSizeFileHuman ${DUMP})" "$((SECONDS-START))"
     report_printMessageReturn $? "Sauvegarde de la base" "$(filesystem_getSizeFileHuman ${DUMP})" "$((SECONDS-START))"
-    [[ $? -ne 0 ]] && report_warning && logger_warning && return 1
+    [[ $? -ne 0 ]] && report_warning && logger_warning2 && return 1
 
-    if [[ -n ${OLIX_MODULE_MYSQL_BACKUP_COMPRESS} ]]; then
-        backup_compress "${OLIX_MODULE_MYSQL_BACKUP_COMPRESS}" "${DUMP}"
-        [[ $? -ne 0 ]] && return 1
-        DUMP=${OLIX_FUNCTION_RESULT}
-    fi
+    backup_compress "${OLIX_MODULE_MYSQL_BACKUP_COMPRESS}" "${DUMP}"
+    [[ $? -ne 0 ]] && return 1
+    DUMP=${OLIX_FUNCTION_RESULT}
 
     backup_purge "${OLIX_MODULE_MYSQL_BACKUP_DIR}" "dump-$I-*" "${OLIX_MODULE_MYSQL_BACKUP_PURGE}"
     [[ $? -ne 0 ]] && return 1
-
-    return 0
-    [[ $? -ne 0 ]] && logger_warning "Echec du dump de la base '${I}' vers '${DUMP}'" && return 1
-    
-    if [[ -n ${OLIX_MODULE_MYSQL_BACKUP_COMPRESS} ]]; then
-            file_compressBZ2 ${DUMP}
-            [[ $? -ne 0 ]] && "Echec de la compression du dump '${DUMP}'" && continue
-        fi
-
-
-    
 
     return 0
 }
