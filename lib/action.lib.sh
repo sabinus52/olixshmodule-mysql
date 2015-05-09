@@ -269,7 +269,7 @@ function module_mysql_action_backup()
 
     # Mise en place du rapport
     report_initialize "${OLIX_MODULE_MYSQL_BACKUP_REPORT}" \
-                      "${OLIX_MODULE_MYSQL_BACKUP_DIR}/rapport-dump-mysql-${OLIX_SYSTEM_DATE}" \
+                      "${OLIX_MODULE_MYSQL_BACKUP_DIR}" "rapport-dump-mysql-${OLIX_SYSTEM_DATE}" \
                       "${OLIX_MODULE_MYSQL_BACKUP_EMAIL}"
     stdout_printHead1 "Sauvegarde des bases MySQL %s le %s à %s" "${HOSTNAME}" "${OLIX_SYSTEM_DATE}" "${OLIX_SYSTEM_TIME}"
     report_printHead1 "Sauvegarde des bases MySQL %s le %s à %s" "${HOSTNAME}" "${OLIX_SYSTEM_DATE}" "${OLIX_SYSTEM_TIME}"
@@ -277,7 +277,7 @@ function module_mysql_action_backup()
     local I
     for I in ${OLIX_MODULE_MYSQL_BACKUP_BASES}; do
         logger_info "Sauvegarde de la base '${I}'"
-        module_mysql_backupDatabase ${I}
+        module_mysql_backupDatabase "${I}" "${OLIX_MODULE_MYSQL_BACKUP_DIR}" "${OLIX_MODULE_MYSQL_BACKUP_COMPRESS}" "${OLIX_MODULE_MYSQL_BACKUP_PURGE}" false
         [[ $? -ne 0 ]] && IS_ERROR=true
     done
 

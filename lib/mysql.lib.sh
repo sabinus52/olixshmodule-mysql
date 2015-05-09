@@ -115,6 +115,31 @@ function module_mysql_getListDatabases()
 
 
 ###
+# Crée un rôle
+# @param $1 : Nom de la base du rôle
+# @param $2 : Nom du rôle
+# @param $3 : Mot de passe du rôle
+# @param $4 : Host du serveur MySQL
+# @param $5 : Port du serveur
+# @param $6 : Utilisateur mysql
+# @param $7 : Mot de passe
+##
+function module_mysql_createRole()
+{
+    local URL=$(module_mysql_getDbUrl $4 $5 $6 $7)
+    logger_debug "module_mysql_createRole ($1, $2, $3, ${URL})"
+
+    if [[ ${OLIX_OPTION_VERBOSE} == true ]]; then
+        mysql --verbose ${URL}  --execute="GRANT ALL PRIVILEGES ON $1.* TO '$2'@'localhost' IDENTIFIED BY '$2';"
+    else
+        mysql ${URL} --execute="GRANT ALL PRIVILEGES ON $1.* TO '$2'@'localhost' IDENTIFIED BY '$2';" 2> ${OLIX_LOGGER_FILE_ERR}
+    fi
+    [[ $? -ne 0 ]] && return 1
+    return 0
+}
+
+
+###
 # Fait un dump d'une base
 # @param $1  : Nom de la base
 # @param $2  : Fichier de dump
@@ -209,6 +234,30 @@ function module_mysql_dropDatabase()
 
 
 ###
+# Supprime une base de données même si elle n'existe pas
+# @param $1 : Nom de la base à créer
+# @param $2 : Host du serveur MySQL
+# @param $3 : Port du serveur
+# @param $4 : Utilisateur mysql
+# @param $5 : Mot de passe
+# @return bool
+##
+function module_mysql_dropDatabaseIfExists()
+{
+    local URL=$(module_mysql_getDbUrl $2 $3 $4 $5)
+    logger_debug "module_mysql_dropDatabaseIfExists ($1, ${URL})"
+
+    if [[ ${OLIX_OPTION_VERBOSE} == true ]]; then
+        mysql --verbose ${URL}  --execute="DROP DATABASE IF EXISTS $1;"
+    else
+        mysql ${URL} --execute="DROP DATABASE IF EXISTS $1;" 2> ${OLIX_LOGGER_FILE_ERR}
+    fi
+    [[ $? -ne 0 ]] && return 1
+    return 0
+}
+
+
+###
 # Copie une base de données vers une autre une base
 # @param $1  : Nom de la base source
 # @param $2  : Nom de la base destination
@@ -258,37 +307,50 @@ function module_mysql_synchronizeDatabase()
 ###
 # Fait une sauvegarde d'une base MySQL
 # @param $1 : Nom de la base
+# @param $2 : Emplacement du backup
+# @param $3 : Compression
+# @param $4 : Rétention pour la purge
+# @param $5 : FTP type utilisé (false|lftp|ncftp)
+# @param $6 : Host du FTP
+# @param $7 : Utilisateur du FTP
+# @param $8 : Password du FTP
+# @param $9 : Chemin du FTP
 # @return bool
 ##
 function module_mysql_backupDatabase()
 {
     logger_debug "module_mysql_backupDatabase ($1)"
+    local BASE=$1
+    local DIRBCK=$2
+    local COMPRESS=$3
+    local PURGE=$4
+    local FTP=$5
+    local FTP_HOST=$6
+    local FTP_USER=$7
+    local FTP_PASS=$8
+    local FTP_PATH=$9
 
-    stdout_printHead2 "Sauvegarde de la base MySQL %s" "$1"
-    report_printHead2 "Sauvegarde de la base MySQL %s" "$1"
+    stdout_printHead2 "Dump de la base MySQL %s" "${BASE}"
+    report_printHead2 "Dump de la base MySQL %s" "${BASE}"
 
-    if ! module_mysql_isBaseExists "$1"; then
-        report_warning "La base '$1' n'existe pas"
-        logger_warning "La base '$1' n'existe pas"
+    if ! module_mysql_isBaseExists "${BASE}"; then
+        report_warning "La base '${BASE}' n'existe pas"
+        logger_warning "La base '${BASE}' n'existe pas"
         return 1
     fi
 
-    local DUMP="${OLIX_MODULE_MYSQL_BACKUP_DIR}/dump-$1-${OLIX_SYSTEM_DATE}.sql"
-    logger_info "Sauvegarde baseMySQL ($1) -> ${DUMP}"
+    local DUMP="${DIRBCK}/dump-${BASE}-${OLIX_SYSTEM_DATE}.sql"
+    logger_info "Sauvegarde baseMySQL (${BASE}) -> ${DUMP}"
 
     local START=${SECONDS}
 
-    module_mysql_dumpDatabase "$1" ${DUMP}
+    module_mysql_dumpDatabase "${BASE}" "${DUMP}"
     stdout_printMessageReturn $? "Sauvegarde de la base" "$(filesystem_getSizeFileHuman ${DUMP})" "$((SECONDS-START))"
     report_printMessageReturn $? "Sauvegarde de la base" "$(filesystem_getSizeFileHuman ${DUMP})" "$((SECONDS-START))"
     [[ $? -ne 0 ]] && report_warning && logger_warning2 && return 1
 
-    backup_compress "${OLIX_MODULE_MYSQL_BACKUP_COMPRESS}" "${DUMP}"
-    [[ $? -ne 0 ]] && return 1
-    DUMP=${OLIX_FUNCTION_RESULT}
+    backup_finalize "${DUMP}" "${DIRBCK}" "${COMPRESS}" "${PURGE}" "dump-${BASE}-*" \
+        "${FTP}" "${FTP_HOST}" "${FTP_USER}" "${FTP_PASS}" "${FTP_PATH}"
 
-    backup_purge "${OLIX_MODULE_MYSQL_BACKUP_DIR}" "dump-$I-*" "${OLIX_MODULE_MYSQL_BACKUP_PURGE}"
-    [[ $? -ne 0 ]] && return 1
-
-    return 0
+    return $?
 }
