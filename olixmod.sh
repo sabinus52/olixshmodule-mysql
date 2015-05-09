@@ -1,16 +1,6 @@
 ###
 # Module de la gestion des bases MySQL
 # ==============================================================================
-# OLIX_MODULE_MYSQL_HOST            : Nom du serveur MySQL
-# OLIX_MODULE_MYSQL_PORT            : Numéro du port MySQL
-# OLIX_MODULE_MYSQL_USER            : Nom de l'utilisateur MySQL
-# OLIX_MODULE_MYSQL_PASS            : Mot de passe de l'utilisateur
-# OLIX_MODULE_MYSQL_BACKUP_DIR      : Emplacement des dumps lors de la sauvegarde
-# OLIX_MODULE_MYSQL_BACKUP_COMPRESS : Format de compression
-# OLIX_MODULE_MYSQL_BACKUP_PURGE    : Nombre de jours de retention de la sauvegarde
-# OLIX_MODULE_MYSQL_BACKUP_REPORT   : Format des rapports
-# OLIX_MODULE_MYSQL_BACKUP_EMAIL    : Email d'envoi de rapport
-# ------------------------------------------------------------------------------
 # @package olixsh
 # @module mysql
 # @author Olivier <sabinus52@gmail.com>
