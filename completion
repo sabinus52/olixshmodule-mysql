@@ -67,7 +67,7 @@ _olixsh_module_dump()
     local CUR BASES
     CUR="${COMP_WORDS[COMP_CWORD]}"
 
-    COMPREPLY=( $(compgen -W "$(${OLIX_ROOT_COMP}/olixsh mysql --list)" -- ${cur}) )
+    COMPREPLY=( $(compgen -W "$(${OLIX_ROOT_COMP}/olixsh mysql --list)" -- ${CUR}) )
 }
 
 
@@ -79,7 +79,7 @@ _olixsh_module_restore()
     local CUR BASES
     CUR="${COMP_WORDS[COMP_CWORD]}"
 
-    COMPREPLY=( $(compgen -f -- ${cur}) )
+    COMPREPLY=( $(compgen -f -- ${CUR}) )
 }
 
 
@@ -91,5 +91,5 @@ _olixsh_module_drop()
     local CUR BASES
     CUR="${COMP_WORDS[COMP_CWORD]}"
 
-    COMPREPLY=( $(compgen -W "$(${OLIX_ROOT_COMP}/olixsh mysql --list)" -- ${cur}) )
+    COMPREPLY=( $(compgen -W "$(${OLIX_ROOT_COMP}/olixsh mysql --list)" -- ${CUR}) )
 }
