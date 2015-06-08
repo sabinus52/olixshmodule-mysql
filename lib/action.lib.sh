@@ -272,7 +272,6 @@ function module_mysql_action_backup()
                       "${OLIX_MODULE_MYSQL_BACKUP_DIR}" "rapport-dump-mysql-${OLIX_SYSTEM_DATE}" \
                       "${OLIX_MODULE_MYSQL_BACKUP_EMAIL}"
     stdout_printHead1 "Sauvegarde des bases MySQL %s le %s à %s" "${HOSTNAME}" "${OLIX_SYSTEM_DATE}" "${OLIX_SYSTEM_TIME}"
-    report_printHead1 "Sauvegarde des bases MySQL %s le %s à %s" "${HOSTNAME}" "${OLIX_SYSTEM_DATE}" "${OLIX_SYSTEM_TIME}"
 
     local I
     for I in ${OLIX_MODULE_MYSQL_BACKUP_BASES}; do
@@ -281,8 +280,7 @@ function module_mysql_action_backup()
         [[ $? -ne 0 ]] && IS_ERROR=true
     done
 
-    stdout_print; stdout_printLine; stdout_print "${Cvert}Sauvegarde terminée en $(core_getTimeExec) secondes${CVOID}"
-    report_print; report_printLine; report_print "Sauvegarde terminée en $(core_getTimeExec) secondes"
+    stdout_print; stdout_printLine; stdout_print "Sauvegarde terminée en $(core_getTimeExec) secondes" "${Cvert}"
 
     if [[ ${IS_ERROR} == true ]]; then
         report_terminate "ERREUR - Rapport de backups des bases du serveur ${HOSTNAME}"
