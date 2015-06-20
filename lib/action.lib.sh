@@ -42,7 +42,7 @@ function module_mysql_action_init()
     # Ecriture du fichier de configuration
     logger_info "Création du fichier de configuration ${OLIX_MODULE_FILECONF}"
     echo "# Fichier de configuration du module MYSQL" > ${OLIX_MODULE_FILECONF} 2> ${OLIX_LOGGER_FILE_ERR}
-    [[ $? -ne 0 ]] && logger_error
+    [[ $? -ne 0 ]] && logger_critical
     echo "OLIX_MODULE_MYSQL_HOST=${OLIX_MODULE_MYSQL_HOST}" >> ${OLIX_MODULE_FILECONF}
     echo "OLIX_MODULE_MYSQL_PORT=${OLIX_MODULE_MYSQL_PORT}" >> ${OLIX_MODULE_FILECONF}
     echo "OLIX_MODULE_MYSQL_USER=${OLIX_MODULE_MYSQL_USER}" >> ${OLIX_MODULE_FILECONF}
@@ -51,7 +51,7 @@ function module_mysql_action_init()
     # Création du rôle
     logger_info "Création du rôle '${OLIX_MODULE_MYSQL_USER}'"
     module_mysql_createRoleOliX "${OLIX_MODULE_MYSQL_HOST}" "${OLIX_MODULE_MYSQL_PORT}" "${OLIX_MODULE_MYSQL_USER}" "${OLIX_MODULE_MYSQL_PASS}"
-    [[ $? -ne 0 ]] && logger_error "Impossible de créer le rôle '${OLIX_MODULE_MYSQL_USER}' dans le serveur MySQL"
+    [[ $? -ne 0 ]] && logger_critical "Impossible de créer le rôle '${OLIX_MODULE_MYSQL_USER}' dans le serveur MySQL"
 
     echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }
@@ -72,11 +72,11 @@ function module_mysql_action_dump()
 
     # Vérifie les paramètres
     filesystem_isCreateFile "${OLIX_MODULE_MYSQL_PARAM2}"
-    [[ $? -ne 0 ]] && logger_error "Impossible de créer le fichier '${OLIX_MODULE_MYSQL_PARAM2}'"
+    [[ $? -ne 0 ]] && logger_critical "Impossible de créer le fichier '${OLIX_MODULE_MYSQL_PARAM2}'"
     
     logger_info "Dump de la base '${OLIX_MODULE_MYSQL_PARAM1}' vers le fichier '${OLIX_MODULE_MYSQL_PARAM2}'"
     module_mysql_dumpDatabase ${OLIX_MODULE_MYSQL_PARAM1} ${OLIX_MODULE_MYSQL_PARAM2}
-    [[ $? -ne 0 ]] && logger_error "Echec du dump de la base '${OLIX_MODULE_MYSQL_PARAM1}' vers le fichier '${OLIX_MODULE_MYSQL_PARAM2}'"
+    [[ $? -ne 0 ]] && logger_critical "Echec du dump de la base '${OLIX_MODULE_MYSQL_PARAM1}' vers le fichier '${OLIX_MODULE_MYSQL_PARAM2}'"
 
     echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }
@@ -94,11 +94,11 @@ function module_mysql_action_restore()
     [ $# -lt 2 ] && module_mysql_usage_restore && core_exit 1
 
     # Vérifie les paramètres
-    [[ ! -r ${OLIX_MODULE_MYSQL_PARAM1} ]] && logger_error "Le fichier '${OLIX_MODULE_MYSQL_PARAM1}' est absent ou inaccessible"
+    [[ ! -r ${OLIX_MODULE_MYSQL_PARAM1} ]] && logger_critical "Le fichier '${OLIX_MODULE_MYSQL_PARAM1}' est absent ou inaccessible"
     
     logger_info "Restauration du dump '${OLIX_MODULE_MYSQL_PARAM1}' vers la base '${OLIX_MODULE_MYSQL_PARAM2}'"
     module_mysql_restoreDatabase ${OLIX_MODULE_MYSQL_PARAM1} ${OLIX_MODULE_MYSQL_PARAM2}
-    [[ $? -ne 0 ]] && logger_error "Echec de la restauration du dump '${OLIX_MODULE_MYSQL_PARAM1}' vers la base '${OLIX_MODULE_MYSQL_PARAM2}'"
+    [[ $? -ne 0 ]] && logger_critical "Echec de la restauration du dump '${OLIX_MODULE_MYSQL_PARAM1}' vers la base '${OLIX_MODULE_MYSQL_PARAM2}'"
 
     echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }
@@ -118,7 +118,7 @@ function module_mysql_action_create()
 
     logger_info "Création de la base '${OLIX_MODULE_MYSQL_PARAM1}'"
     module_mysql_createDatabase ${OLIX_MODULE_MYSQL_PARAM1}
-    [[ $? -ne 0 ]] && logger_error "Echec de la création de la base '${OLIX_MODULE_MYSQL_PARAM1}'"
+    [[ $? -ne 0 ]] && logger_critical "Echec de la création de la base '${OLIX_MODULE_MYSQL_PARAM1}'"
 
     echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }
@@ -142,7 +142,7 @@ function module_mysql_action_drop()
 
         logger_info "Suppression de la base '${OLIX_MODULE_MYSQL_PARAM1}'"
         module_mysql_dropDatabase ${OLIX_MODULE_MYSQL_PARAM1}
-        [[ $? -ne 0 ]] && logger_error "Echec de la suppression de la base '${OLIX_MODULE_MYSQL_PARAM1}'"
+        [[ $? -ne 0 ]] && logger_critical "Echec de la suppression de la base '${OLIX_MODULE_MYSQL_PARAM1}'"
 
         echo -e "${Cvert}Action terminée avec succès${CVOID}"
     fi
@@ -164,7 +164,7 @@ function module_mysql_action_copy()
 
     logger_info "Copie de la base '${OLIX_MODULE_MYSQL_PARAM1}' vers '${OLIX_MODULE_MYSQL_PARAM2}'"
     module_mysql_copyDatabase ${OLIX_MODULE_MYSQL_PARAM1} ${OLIX_MODULE_MYSQL_PARAM2}
-    [[ $? -ne 0 ]] && logger_error "Echec de la copie de '${OLIX_MODULE_MYSQL_PARAM1}' vers '${OLIX_MODULE_MYSQL_PARAM2}'"
+    [[ $? -ne 0 ]] && logger_critical "Echec de la copie de '${OLIX_MODULE_MYSQL_PARAM1}' vers '${OLIX_MODULE_MYSQL_PARAM2}'"
 
     echo -e "${Cvert}Action terminée avec succès${CVOID}"
 }
@@ -182,7 +182,7 @@ function module_mysql_action_sync()
     [ $# -lt 1 ] && module_mysql_usage_sync && core_exit 1
 
     module_mysql_isBaseExists "${OLIX_MODULE_MYSQL_PARAM1}"
-    [[ $? -ne 0 ]] && logger_error "La base '${OLIX_MODULE_MYSQL_PARAM1}' n'existe pas"
+    [[ $? -ne 0 ]] && logger_critical "La base '${OLIX_MODULE_MYSQL_PARAM1}' n'existe pas"
 
     # Demande des infos de connexion à la base distante
     stdin_readConnexionServer "" "3306" "root"
@@ -200,7 +200,7 @@ function module_mysql_action_sync()
             "${OLIX_MODULE_MYSQL_PARAM2}" \
             "--host=${OLIX_MODULE_MYSQL_HOST} --port=${OLIX_MODULE_MYSQL_PORT} --user=${OLIX_MODULE_MYSQL_USER} --password=${OLIX_MODULE_MYSQL_PASS}" \
             "${OLIX_MODULE_MYSQL_PARAM1}"
-        [[ $? -ne 0 ]] && logger_error "Echec de la synchronisation de '${OLIX_STDIN_RETURN_HOST}:${OLIX_MODULE_MYSQL_PARAM2}' vers '${OLIX_MODULE_MYSQL_PARAM1}'"
+        [[ $? -ne 0 ]] && logger_critical "Echec de la synchronisation de '${OLIX_STDIN_RETURN_HOST}:${OLIX_MODULE_MYSQL_PARAM2}' vers '${OLIX_MODULE_MYSQL_PARAM1}'"
         echo -e "${Cvert}Action terminée avec succès${CVOID}"
     fi
 }
@@ -222,9 +222,9 @@ function module_mysql_action_backup()
     fi
     if [[ ! -d ${OLIX_MODULE_MYSQL_BACKUP_DIR} ]]; then
         logger_warning "Création du dossier inexistant OLIX_MODULE_MYSQL_BACKUP_DIR: \"${OLIX_MODULE_MYSQL_BACKUP_DIR}\""
-        mkdir ${OLIX_MODULE_MYSQL_BACKUP_DIR} || logger_error "Impossible de créer OLIX_MODULE_MYSQL_BACKUP_DIR: \"${OLIX_MODULE_MYSQL_BACKUP_DIR}\""
+        mkdir ${OLIX_MODULE_MYSQL_BACKUP_DIR} || logger_critical "Impossible de créer OLIX_MODULE_MYSQL_BACKUP_DIR: \"${OLIX_MODULE_MYSQL_BACKUP_DIR}\""
     elif [[ ! -w ${OLIX_MODULE_MYSQL_BACKUP_DIR} ]]; then
-        logger_error "Le dossier '${OLIX_MODULE_MYSQL_BACKUP_DIR}' n'a pas les droits en écriture"
+        logger_critical "Le dossier '${OLIX_MODULE_MYSQL_BACKUP_DIR}' n'a pas les droits en écriture"
     fi
 
     source lib/backup.lib.sh

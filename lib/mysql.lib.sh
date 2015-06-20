@@ -344,7 +344,7 @@ function module_mysql_backupDatabase()
 
     module_mysql_dumpDatabase "${BASE}" "${DUMP}"
     stdout_printMessageReturn $? "Sauvegarde de la base" "$(filesystem_getSizeFileHuman ${DUMP})" "$((SECONDS-START))"
-    [[ $? -ne 0 ]] && logger_warning && return 1
+    [[ $? -ne 0 ]] && logger_error && return 1
 
     backup_finalize "${DUMP}" "${DIRBCK}" "${COMPRESS}" "${PURGE}" "dump-${BASE}-*" \
         "${FTP}" "${FTP_HOST}" "${FTP_USER}" "${FTP_PASS}" "${FTP_PATH}"
