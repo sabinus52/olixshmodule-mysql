@@ -75,6 +75,26 @@ function module_mysql_getDbUrl()
 
 
 ###
+# Test une connexion au serveur de base de données
+# @param $1  : Host du serveur MySQL
+# @param $2  : Port du serveur
+# @param $4  : Utilisateur mysql
+# @param $4  : Mot de passe
+# @return bool
+##
+function module_mysql_checkConnect()
+{
+    local URL=$(module_mysql_getDbUrl $1 $2 $3 $4)
+    logger_debug "module_mysql_checkConnect (${URL})"
+
+    mysql ${URL} --execute="SHOW DATABASES;" > /dev/null
+    [[ $? -ne 0 ]] && return 1
+
+    return 0
+}
+
+
+###
 # Vérifie si une base existe
 # @param $1 : Nom de la base à vérifier
 # @param $2 : Host du serveur MySQL
@@ -344,7 +364,7 @@ function module_mysql_backupDatabase()
 
     module_mysql_dumpDatabase "${BASE}" "${DUMP}"
     stdout_printMessageReturn $? "Sauvegarde de la base" "$(filesystem_getSizeFileHuman ${DUMP})" "$((SECONDS-START))"
-    [[ $? -ne 0 ]] && logger_warning && return 1
+    [[ $? -ne 0 ]] && logger_error && return 1
 
     backup_finalize "${DUMP}" "${DIRBCK}" "${COMPRESS}" "${PURGE}" "dump-${BASE}-*" \
         "${FTP}" "${FTP_HOST}" "${FTP_USER}" "${FTP_PASS}" "${FTP_PATH}"

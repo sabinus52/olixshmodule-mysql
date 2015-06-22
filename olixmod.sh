@@ -8,6 +8,18 @@
 
 OLIX_MODULE_NAME="mysql"
 
+# Valeur par defaut de la configuration principale
+OLIX_MODULE_MYSQL_HOST="localhost"
+OLIX_MODULE_MYSQL_PORT="3306"
+OLIX_MODULE_MYSQL_USER="olix"
+OLIX_MODULE_MYSQL_PASS=
+# Valeur par defaut de la configuration optionnelle
+OLIX_MODULE_MYSQL_BACKUP_DIR="/tmp"
+OLIX_MODULE_MYSQL_BACKUP_COMPRESS="GZ"
+OLIX_MODULE_MYSQL_BACKUP_PURGE="5"
+OLIX_MODULE_MYSQL_BACKUP_REPORT="TEXT"
+OLIX_MODULE_MYSQL_BACKUP_EMAIL=
+
 
 ###
 # Retourne la liste des modules requis

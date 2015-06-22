@@ -22,6 +22,7 @@ function module_mysql_usage_main()
     echo
     echo -e "${CJAUNE}Liste des ACTIONS disponibles${CVOID} :"
     echo -e "${Cjaune} init    ${CVOID}  : Initialisation du module"
+    echo -e "${Cjaune} check   ${CVOID}  : Test de la connexion au serveur MySQL"
     echo -e "${Cjaune} dump    ${CVOID}  : Fait un dump d'une base de données"
     echo -e "${Cjaune} restore ${CVOID}  : Restauration d'une base de données"
     echo -e "${Cjaune} create  ${CVOID}  : Création d'une base de données"
@@ -30,6 +31,26 @@ function module_mysql_usage_main()
     echo -e "${Cjaune} sync    ${CVOID}  : Synchronisation d'une base à partir d'un serveur distant"
     echo -e "${Cjaune} backup  ${CVOID}  : Réalisation d'une sauvegarde des bases MySQL avec rapport pour tâches planifiées"
     echo -e "${Cjaune} help    ${CVOID}  : Affiche cet écran"
+}
+
+
+###
+# Usage de l'action CHECK
+##
+function module_mysql_usage_check()
+{
+    logger_debug "module_mysql_usage_check ()"
+    stdout_printVersion
+    echo
+    echo -e "Test de la connexion au serveur MySQL"
+    echo
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename ${OLIX_ROOT_SCRIPT}) ${CVERT}mysql ${CJAUNE}check${CVOID} ${CBLANC} [OPTIONS]${CVOID}"
+    echo
+    echo -e "${Ccyan}OPTIONS${CVOID}"
+    echo -en "${CBLANC} --host=${OLIX_MODULE_MYSQL_HOST} ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_HOST}" 13 " "; echo " : Host du serveur MYSQL"
+    echo -en "${CBLANC} --port=${OLIX_MODULE_MYSQL_PORT} ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_PORT}" 13 " "; echo " : Port du serveur MYSQL"
+    echo -en "${CBLANC} --user=${OLIX_MODULE_MYSQL_USER} ${CVOID}"; stdout_strpad "${OLIX_MODULE_MYSQL_USER}" 13 " "; echo " : User du serveur MYSQL"
+    echo -en "${CBLANC} --pass= ${CVOID}"; stdout_strpad "" 13 " "; echo " : Password du serveur MYSQL"
 }
 
 
