@@ -57,6 +57,21 @@ function module_mysql_action_init()
 }
 
 
+###
+# Test de la connexion au serveur MySQL
+##
+function module_mysql_action_check()
+{
+    logger_debug "module_mysql_action_check ($@)"
+
+    echo -e "Test de connexion avec ${Ccyan}${OLIX_MODULE_MYSQL_USER}@${OLIX_MODULE_MYSQL_HOST}:${OLIX_MODULE_MYSQL_PORT}${CVOID}"
+    module_mysql_checkConnect
+    [[ $? -ne 0 ]] && logger_critical "Echec de connexion au serveur MySQL"
+    mysql --version
+
+    echo -e "${Cvert}Connexion au serveur MySQL réussi${CVOID}"
+}
+
 
 ###
 # Fait un dump d'une base de données
