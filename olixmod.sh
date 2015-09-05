@@ -8,12 +8,13 @@
 
 OLIX_MODULE_NAME="mysql"
 
-# Valeur par defaut de la configuration principale
+# Valeur par defaut de la configuration principale (/etc/olixsh/mysql.conf | $param)
 OLIX_MODULE_MYSQL_HOST="localhost"
 OLIX_MODULE_MYSQL_PORT="3306"
 OLIX_MODULE_MYSQL_USER="olix"
 OLIX_MODULE_MYSQL_PASS=
-# Valeur par defaut de la configuration optionnelle
+
+# Valeur par defaut de la configuration optionnelle à rajouter dans (/etc/olixsh/mysql.conf | $param)
 OLIX_MODULE_MYSQL_BACKUP_DIR="/tmp"
 OLIX_MODULE_MYSQL_BACKUP_COMPRESS="GZ"
 OLIX_MODULE_MYSQL_BACKUP_PURGE="5"
@@ -82,6 +83,7 @@ olixmod_init()
     logger_debug "module_mysql__olixmod_init (null)"
     source modules/mysql/lib/mysql.lib.sh
     source modules/mysql/lib/action.lib.sh
+    module_initialize $@
     module_mysql_action_init $@
 }
 
