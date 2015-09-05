@@ -15,6 +15,7 @@
 function module_mysql_action_init()
 {
     logger_debug "module_mysql_action_init ($@)"
+    local FILECONF=$(config_getFilenameModule ${OLIX_MODULE_NAME})
 
     # Host
     stdin_read "Host du serveur MySQL" "${OLIX_MODULE_MYSQL_HOST}"
@@ -40,13 +41,13 @@ function module_mysql_action_init()
     OLIX_MODULE_MYSQL_PASS=${OLIX_STDIN_RETURN}
 
     # Ecriture du fichier de configuration
-    logger_info "Création du fichier de configuration ${OLIX_MODULE_FILECONF}"
-    echo "# Fichier de configuration du module MYSQL" > ${OLIX_MODULE_FILECONF} 2> ${OLIX_LOGGER_FILE_ERR}
+    logger_info "Création du fichier de configuration ${FILECONF}"
+    echo "# Fichier de configuration du module MYSQL" > ${FILECONF} 2> ${OLIX_LOGGER_FILE_ERR}
     [[ $? -ne 0 ]] && logger_critical
-    echo "OLIX_MODULE_MYSQL_HOST=${OLIX_MODULE_MYSQL_HOST}" >> ${OLIX_MODULE_FILECONF}
-    echo "OLIX_MODULE_MYSQL_PORT=${OLIX_MODULE_MYSQL_PORT}" >> ${OLIX_MODULE_FILECONF}
-    echo "OLIX_MODULE_MYSQL_USER=${OLIX_MODULE_MYSQL_USER}" >> ${OLIX_MODULE_FILECONF}
-    echo "OLIX_MODULE_MYSQL_PASS=${OLIX_MODULE_MYSQL_PASS}" >> ${OLIX_MODULE_FILECONF}
+    echo "OLIX_MODULE_MYSQL_HOST=${OLIX_MODULE_MYSQL_HOST}" >> ${FILECONF}
+    echo "OLIX_MODULE_MYSQL_PORT=${OLIX_MODULE_MYSQL_PORT}" >> ${FILECONF}
+    echo "OLIX_MODULE_MYSQL_USER=${OLIX_MODULE_MYSQL_USER}" >> ${FILECONF}
+    echo "OLIX_MODULE_MYSQL_PASS=${OLIX_MODULE_MYSQL_PASS}" >> ${FILECONF}
 
     # Création du rôle
     logger_info "Création du rôle '${OLIX_MODULE_MYSQL_USER}'"
