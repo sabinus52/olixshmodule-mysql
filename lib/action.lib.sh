@@ -266,4 +266,8 @@ function module_mysql_action_backup()
     else
         report_terminate "Rapport de backups des bases du serveur ${HOSTNAME}"
     fi
+
+    # Purge des logs
+    logger_info "Purge des logs de rapport"
+    file_purgeStandard "${OLIX_MODULE_MYSQL_BACKUP_DIR}" "rapport-dump-mysql-" "10"
 }
