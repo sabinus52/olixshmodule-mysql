@@ -20,7 +20,6 @@
 ##
 olixmodule_mysql_require_libraries()
 {
-    load "modules/mysql/conf/params.sh"
     load "modules/mysql/lib/*"
 }
 
@@ -46,10 +45,9 @@ olixmodule_mysql_require_binary()
 ###
 # Traitement à effectuer au début d'un traitement
 ##
-olixmodule_mysql_include_begin()
-{
-    olixmodule_mysql_params_parse $@
-}
+# olixmodule_mysql_include_begin()
+# {
+# }
 
 
 ###
