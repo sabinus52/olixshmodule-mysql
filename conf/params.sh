@@ -66,8 +66,12 @@ function olixmodule_mysql_params_parse()
 function olixmodule_mysql_params_get()
 {
     case $1 in
-        create|drop)
-            [[ -z $OLIX_MODULE_MYSQL_BASE ]] && OLIX_MODULE_MYSQL_BASE=$2
+        create)
+            [[ -z $OLIX_MODULE_MYSQL_BASE ]] && OLIX_MODULE_MYSQL_BASE=$2 && return
+            [[ -z $OLIX_MODULE_MYSQL_OWNER ]] && OLIX_MODULE_MYSQL_OWNER=$2 && return
+            ;;
+        drop)
+            [[ -z $OLIX_MODULE_MYSQL_BASE ]] && OLIX_MODULE_MYSQL_BASE=$2 && return
             ;;
         dump)
             [[ -z $OLIX_MODULE_MYSQL_BASE ]] && OLIX_MODULE_MYSQL_BASE=$2 && return
@@ -104,6 +108,10 @@ function olixmodule_mysql_params_debug ()
     debug "OLIX_MODULE_MYSQL_USER=${OLIX_MODULE_MYSQL_USER}"
     debug "OLIX_MODULE_MYSQL_PASS=${OLIX_MODULE_MYSQL_PASS}"
     case $1 in
+        create)
+            debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
+            debug "OLIX_MODULE_MYSQL_OWNER=${OLIX_MODULE_MYSQL_OWNER}"
+            ;;
         create|drop)
             debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
             ;;

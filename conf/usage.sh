@@ -93,7 +93,7 @@ function olixmodule_mysql_usage_create()
     echo
     echo -e "Création d'une base de données MySQL"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename $OLIX_ROOT_SCRIPT) ${CVERT}mysql ${CJAUNE}create${CVOID} ${CBLANC}<base> [OPTIONS]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename $OLIX_ROOT_SCRIPT) ${CVERT}mysql ${CJAUNE}create${CVOID} ${CBLANC}<base> <owner> [OPTIONS]${CVOID}"
     echo
     echo -e "${Ccyan}OPTIONS${CVOID}"
     olixmodule_mysql_usage_paramserver

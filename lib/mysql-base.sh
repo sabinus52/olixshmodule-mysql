@@ -27,18 +27,22 @@ function Mysql.base.exists()
 ###
 # Crée une nouvelle base de données
 # @param $1 : Nom de la base à créer
-# @param $2-5 : Infos de connexion au serveur
+# @param $2 : Nom de "propriétaire"
+# @param $3-6 : Infos de connexion au serveur
 # @return bool
 ##
 function Mysql.base.create()
 {
-    local CONNECTION=$(Mysql.server.connection $2 $3 $4 $5)
+    local CONNECTION=$(Mysql.server.connection $3 $4 $5 $6)
     debug "Mysql.base.create ($1, ${CONNECTION})"
 
+    local SQL="CREATE DATABASE $1;"
+    [[ -n $2 ]] && SQL="$SQL GRANT ALL ON $1.* TO $2;"
+
     if [[ $OLIX_OPTION_VERBOSE == true ]]; then
-        mysql --verbose $CONNECTION  --execute="CREATE DATABASE $1;"
+        mysql --verbose $CONNECTION  --execute="$SQL"
     else
-        mysql $CONNECTION --execute="CREATE DATABASE $1;" 2> ${OLIX_LOGGER_FILE_ERR}
+        mysql $CONNECTION --execute="$SQL" 2> ${OLIX_LOGGER_FILE_ERR}
     fi
     [[ $? -ne 0 ]] && return 1
     return 0
@@ -57,9 +61,9 @@ function Mysql.base.drop()
     debug "Mysql.base.drop ($1, ${CONNECTION})"
 
     if [[ $OLIX_OPTION_VERBOSE == true ]]; then
-        mysql --verbose $CONNECTION  --execute="DROP DATABASE $1;"
+        mysql --verbose $CONNECTION  --execute="DROP DATABASE IF EXISTS $1;"
     else
-        mysql $CONNECTION --execute="DROP DATABASE $1;" 2> ${OLIX_LOGGER_FILE_ERR}
+        mysql $CONNECTION --execute="DROP DATABASE IF EXISTS $1;" 2> ${OLIX_LOGGER_FILE_ERR}
     fi
     [[ $? -ne 0 ]] && return 1
     return 0
@@ -147,4 +151,24 @@ function Mysql.base.dump.ext()
 {
     debug "Mysql.base.dump.ext ()"
     echo "sql"
+}
+
+
+###
+# Réinitialiase complètement une base
+# @param $1 : Nom de la base
+# @param $2 : Nom du rôle
+# @param $3 : Mot de passe du rôle
+##
+function Mysql.base.initialize()
+{
+    debug "Mysql.base.initialize ($1, $2, $3)"
+
+    Mysql.base.drop $1 $4 $5 $6 $7 || return 1
+    if ! Mysql.role.exists $2 $4 $5 $6 $7; then
+        Mysql.role.drop $2 $4 $5 $6 $7 || return 1
+    fi
+    Mysql.role.create $2 $3 $4 $5 $6 $7 || return 1
+    Mysql.base.create $1 $2 $4 $5 $6 $7 || return 1
+    return 0
 }

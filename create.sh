@@ -19,6 +19,10 @@ if [[ -z $OLIX_MODULE_MYSQL_BASE ]]; then
     Module.execute.usage "create"
     critical "Nom de la base à créer manquante"
 fi
+if [[ -z $OLIX_MODULE_MYSQL_OWNER ]]; then
+    Module.execute.usage "create"
+    critical "Nom du propriétaire de la base manquant"
+fi
 
 # Si la base existe
 Mysql.base.exists $OLIX_MODULE_MYSQL_BASE
@@ -31,7 +35,23 @@ Mysql.base.exists $OLIX_MODULE_MYSQL_BASE
 ##
 info "Création de la base '${OLIX_MODULE_MYSQL_BASE}'"
 
-Mysql.base.create $OLIX_MODULE_MYSQL_BASE
+# Test si le role existe
+Mysql.role.exists $OLIX_MODULE_MYSQL_OWNER
+if [[ $? -ne 0 ]]; then
+    warning "Le rôle '${OLIX_MODULE_MYSQL_OWNER}' n'existe pas"
+    Read.confirm "Voulez-vous créer le rôle '${OLIX_MODULE_MYSQL_OWNER}' ?" true
+    if [[ $OLIX_FUNCTION_RETURN == false ]]; then
+        warning "La base '${OLIX_MODULE_MYSQL_BASE}' n'a pas été créée"
+        return
+    fi
+
+    # Création du rôle
+    Read.passwordx2 "Saisir un mot de passe pour le rôle '${OLIX_MODULE_MYSQL_OWNER}'"
+    Mysql.role.create $OLIX_MODULE_MYSQL_OWNER $OLIX_FUNCTION_RETURN
+    [[ $? -ne 0 ]] && critical "Echec de la création du rôle '${OLIX_MODULE_MYSQL_OWNER}'"
+fi
+
+Mysql.base.create $OLIX_MODULE_MYSQL_BASE $OLIX_MODULE_MYSQL_OWNER
 [[ $? -ne 0 ]] && critical "Echec de la création de la base '${OLIX_MODULE_MYSQL_BASE}'"
 
 

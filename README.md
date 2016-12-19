@@ -38,9 +38,10 @@ Command : `olixsh mysql restore <dump_file> <base> [--host=<host>] [--port=3306]
 
 ### Création d'une base de données MySQL
 
-Command : `olixsh mysql create <base> [--host=<host>] [--port=3306] [--user=<user>] [--pass=<password>]`
+Command : `olixsh mysql create <base> <owner> [--host=<host>] [--port=3306] [--user=<user>] [--pass=<password>]`
 
 - `base` : Nom de la base à créer
+- `owner` : Nom du propriétaire de la base (s'il n'existe pas, il sera créé)
 
 
 
