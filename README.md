@@ -2,19 +2,7 @@
 Module for oliXsh : Management of MyQSL server
 
 
-
-### Initialisation du module
-
-Initialiser le module
-
-Command : `olixsh mysql init [--force]`
-
-Entrer les informations suivantes :
-- Host du serveur MySQL local
-- Port du serveur MySQL
-- Choix d'un utilisateur pour une connexion automatique au serveur
-- Choix du mot de passe pour cet utilisateur
-
+**INFO** : La plupart des paramètres peuvent être configurés dans le fichier */etc/olixsh/mysql.conf* ou via la commande *setcfg*
 
 
 ### Test de connexion au serveur MySQL
@@ -50,9 +38,10 @@ Command : `olixsh mysql restore <dump_file> <base> [--host=<host>] [--port=3306]
 
 ### Création d'une base de données MySQL
 
-Command : `olixsh mysql create <base> [--host=<host>] [--port=3306] [--user=<user>] [--pass=<password>]`
+Command : `olixsh mysql create <base> <owner> [--host=<host>] [--port=3306] [--user=<user>] [--pass=<password>]`
 
 - `base` : Nom de la base à créer
+- `owner` : Nom du propriétaire de la base (s'il n'existe pas, il sera créé)
 
 
 
@@ -76,11 +65,13 @@ Command : `olixsh mysql copy <base_source> <base_destination> [--host=<host>] [-
 
 ### Synchronisation d'une base de données MySQL
 
-Fait une copie d'une base de données d'un serveur distant (saisie en mode interactif)
+Fait une copie d'une base de données d'un serveur distant
 vers une base sur le serveur MySQL local défini dans */etc/olixsh/mysql.conf*
 
-Command : `olixsh mysql sync <base_destination>`
+Command : `olixsh mysql sync <user@host[:port]> <base_source> <base_destination>`
 
+- `user@host[:port]` : Info de connexion au serveur MySQL distant
+- `base_source` : Nom de la base de source du serveur distant
 - `base_destination` : Nom de la base de destination à coller
 
 
@@ -98,11 +89,3 @@ Command : `olixsh mysql backup [bases...] [--host=<host>] [--port=3306] [--user=
 - `--bz2` : Compression du dump au format bzip2
 - `--html` : Rapport au format HTML sinon au format TEXT par défaut
 - `--email=name@domain.ltd` : Envoi du rapport à l'adresse *name@domain.ltd*
-
-Ces derniers paramètres peuvent être insérés dans le fichier de configuration */etc/olixsh/mysql.conf* pour éviter de les mettre en paramètres dans la commande :
-- `OLIX_MODULE_MYSQL_BACKUP_DIR` : Emplacement des dumps lors de la sauvegarde
-- `OLIX_MODULE_MYSQL_BACKUP_COMPRESS` : Format de compression (`GZ`|`BZ2`)
-- `OLIX_MODULE_MYSQL_BACKUP_PURGE` : Nombre de jours de retention de la sauvegarde
-- `OLIX_MODULE_MYSQL_BACKUP_REPORT` : Format des rapports (`TEXT`|`HTML`)
-- `OLIX_MODULE_MYSQL_BACKUP_EMAIL` : Email d'envoi du rapport
-
