@@ -138,7 +138,8 @@ function Mysql.base.backup()
     [[ $? -ne 0 ]] && error && return 1
 
     # Finalise la sauvegarde
-    Backup.continue $DUMP "dump-$BASE-"
+    Backup.continue $DUMP
+    Backup.purge "dump-$BASE-"
 
     return $?
 }
@@ -165,7 +166,7 @@ function Mysql.base.initialize()
     debug "Mysql.base.initialize ($1, $2, $3)"
 
     Mysql.base.drop $1 $4 $5 $6 $7 || return 1
-    if ! Mysql.role.exists $2 $4 $5 $6 $7; then
+    if Mysql.role.exists $2 $4 $5 $6 $7; then
         Mysql.role.drop $2 $4 $5 $6 $7 || return 1
     fi
     Mysql.role.create $2 $3 $4 $5 $6 $7 || return 1
