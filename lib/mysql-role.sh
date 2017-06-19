@@ -16,8 +16,10 @@ function Mysql.role.exists()
 {
     local CONNECTION=$(Mysql.server.connection $2 $3 $4 $5)
     debug "Mysql.role.exists ($1, $CONNECTION)"
+    local USER=$(String.explode "$1" 1 '@' | tr -d "'")
+    local HOST=$(String.explode "$1" 2 '@' | tr -d "'")
 
-    mysql $CONNECTION --execute="SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$1')" | tail -1 | grep -q 1
+    mysql $CONNECTION --execute="SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$USER' AND host = '$HOST')" | tail -1 | grep -q 1
     [[ $? -ne 0 ]] && return 1
     return 0
 }
