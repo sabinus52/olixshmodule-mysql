@@ -59,6 +59,7 @@ function Mysql.action.synchronize()
 function Mysql.action.read()
 {
     local CONNECTION=$(Mysql.server.connection $1 $2 $3 $4)
+    local I
     debug "Mysql.action.read ($CONNECTION)"
 
     local BASE LIST_BASE

@@ -27,7 +27,6 @@ function olixmodule_mysql_usage_main()
     echo -e "${Cjaune} drop    ${CVOID}  : Suppréssion d'une base de données"
     echo -e "${Cjaune} copy    ${CVOID}  : Copy d'une base de données vers une autre"
     echo -e "${Cjaune} sync    ${CVOID}  : Synchronisation d'une base à partir d'un serveur distant"
-    echo -e "${Cjaune} backup  ${CVOID}  : Réalisation d'une sauvegarde des bases MySQL avec rapport pour tâches planifiées"
     echo -e "${Cjaune} help    ${CVOID}  : Affiche cet écran"
 }
 
@@ -146,29 +145,6 @@ function olixmodule_mysql_usage_sync()
     echo -e "Synchronisation d'une base à partir d'un serveur MySQL distant"
     echo
     echo -e "${CBLANC} Usage : ${CVIOLET}$(basename $OLIX_ROOT_SCRIPT) ${CVERT}mysql ${CJAUNE}sync${CVOID} ${CBLANC}<user@host[:port]> <base_source> <base_destination>${CVOID}"
-    echo
-    olixmodule_mysql_usage_listbases
-}
-
-
-###
-# Usage de l'action BACKUP
-##
-function olixmodule_mysql_usage_backup()
-{
-    debug "olixmodule_mysql_usage_backup ()"
-    echo
-    echo -e "Réalisation d'une sauvegarde des bases MySQL avec rapport pour tâches planifiées"
-    echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename $OLIX_ROOT_SCRIPT) ${CVERT}mysql ${CJAUNE}backup${CVOID} ${CBLANC}[bases...] [OPTIONS]${CVOID}"
-    echo
-    echo -e "${Ccyan}OPTIONS${CVOID}"
-    olixmodule_mysql_usage_paramserver
-    echo -en "${CBLANC} --dir=$OLIX_MODULE_MYSQL_BACKUP_DIR ${CVOID}"; String.pad "--dir=$OLIX_MODULE_MYSQL_BACKUP_DIR" 30 " "; echo " : Chemin de stockage des backups"
-    echo -en "${CBLANC} --purge=$OLIX_MODULE_MYSQL_BACKUP_PURGE ${CVOID}"; String.pad "--purge=$OLIX_MODULE_MYSQL_BACKUP_PURGE" 30 " "; echo " : Nombre de jours avant la purge des anciens backups"
-    echo -en "${CBLANC} --gz|--bz2 ${CVOID}"; String.pad "--gz|--bz2" 30 " "; echo " : Compression du dump au format gzip ou bzip2"
-    echo -en "${CBLANC} --html ${CVOID}"; String.pad "--html" 30 " "; echo " : Rapport au format HTML sinon au format TEXT par défaut"
-    echo -en "${CBLANC} --email=name@domain.ltd ${CVOID}"; String.pad "--email=name@domain.ltd" 30 " "; echo " : Envoi du rapport à cette adresse"
     echo
     olixmodule_mysql_usage_listbases
 }

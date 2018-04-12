@@ -114,33 +114,30 @@ function Mysql.base.restore()
 ###
 # Fait une sauvegarde d'une base MySQL
 # @param $1 : Nom de la base
+# @param $2 : Fichier de dump
+# @param $3 : Compression
 # @return bool
 ##
 function Mysql.base.backup()
 {
-    debug "Mysql.base.backup ($1)"
-    local BASE=$1
+    local CONNECTION=$(Mysql.server.connection $4 $5 $6 $7)
+    debug "Mysql.base.backup ($1, $2, $3, $CONNECTION)"
 
-    Print.head2 "Dump de la base MySQL %s" "$BASE"
+    local BINCOMPRESS=$(Compression.binary $3)
 
-    if ! Mysql.base.exists $BASE; then
-        warning "La base '${BASE}' n'existe pas"
-        return 1
+    if [[ $OLIX_OPTION_VERBOSE == true ]]; then
+        if [[ -n $BINCOMPRESS ]]; then
+            mysqldump --verbose --opt $CONNECTION $1 | $BINCOMPRESS > $2
+        else
+            mysqldump --verbose --opt $CONNECTION $1 > $2
+        fi
+    else
+        if [[ -n $BINCOMPRESS ]]; then
+            mysqldump --opt $CONNECTION $1 | $BINCOMPRESS > $2 2> ${OLIX_LOGGER_FILE_ERR}
+        else
+            mysqldump --opt $CONNECTION $1 > $2 2> ${OLIX_LOGGER_FILE_ERR}
+        fi
     fi
-
-    local DUMP="$(Backup.path)/dump-$BASE-$OLIX_SYSTEM_DATE.$(Mysql.base.dump.ext)"
-    info "Sauvegarde base MySQL (${BASE}) -> ${DUMP}"
-
-    local START=${SECONDS}
-
-    Mysql.base.dump $BASE $DUMP
-    Print.result $? "Sauvegarde de la base" "$(File.size.human $DUMP)" "$((SECONDS-START))"
-    [[ $? -ne 0 ]] && error && return 1
-
-    # Finalise la sauvegarde
-    Backup.continue $DUMP
-    Backup.purge "dump-$BASE-"
-
     return $?
 }
 

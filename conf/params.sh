@@ -32,21 +32,6 @@ function olixmodule_mysql_params_parse()
             --pass=*)
                 OLIX_MODULE_MYSQL_PASS=$(String.explode.value $1)
                 ;;
-            --dir=*)
-                OLIX_MODULE_MYSQL_BACKUP_DIR=$(String.explode.value $1)
-                ;;
-            --purge=*)
-                OLIX_MODULE_MYSQL_BACKUP_PURGE=$(String.explode.value $1)
-                ;;
-            --gz|--bz2)
-                OLIX_MODULE_MYSQL_BACKUP_COMPRESS=${1/--/}
-                ;;
-            --html)
-                OLIX_MODULE_MYSQL_BACKUP_REPORT="HTML"
-                ;;
-            --email=*)
-                OLIX_MODULE_MYSQL_BACKUP_EMAIL=$(String.explode.value $1)
-                ;;
             *)
                 olixmodule_mysql_params_get "$ACTION" "$1"
                 ;;
@@ -90,9 +75,6 @@ function olixmodule_mysql_params_get()
             [[ -z $OLIX_MODULE_MYSQL_SOURCE_BASE ]] && OLIX_MODULE_MYSQL_SOURCE_BASE=$2 && return
             [[ -z $OLIX_MODULE_MYSQL_BASE ]] && OLIX_MODULE_MYSQL_BASE=$2 && return
             ;;
-        backup)
-            OLIX_MODULE_MYSQL_BACKUP_BASES="$OLIX_MODULE_MYSQL_BACKUP_BASES $2"
-            ;;
     esac
 }
 
@@ -131,14 +113,6 @@ function olixmodule_mysql_params_debug ()
             debug "OLIX_MODULE_MYSQL_SOURCE_HOST=${OLIX_MODULE_MYSQL_SOURCE_HOST}"
             debug "OLIX_MODULE_MYSQL_SOURCE_BASE=${OLIX_MODULE_MYSQL_SOURCE_BASE}"
             debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
-            ;;
-        backup)
-            debug "OLIX_MODULE_MYSQL_BACKUP_BASES=${OLIX_MODULE_MYSQL_BACKUP_BASES}"
-            debug "OLIX_MODULE_MYSQL_BACKUP_DIR=${OLIX_MODULE_MYSQL_BACKUP_DIR}"
-            debug "OLIX_MODULE_MYSQL_BACKUP_PURGE=${OLIX_MODULE_MYSQL_BACKUP_PURGE}"
-            debug "OLIX_MODULE_MYSQL_BACKUP_COMPRESS=${OLIX_MODULE_MYSQL_BACKUP_COMPRESS}"
-            debug "OLIX_MODULE_MYSQL_BACKUP_REPORT=${OLIX_MODULE_MYSQL_BACKUP_REPORT}"
-            debug "OLIX_MODULE_MYSQL_BACKUP_EMAIL=${OLIX_MODULE_MYSQL_BACKUP_EMAIL}"
             ;;
     esac
 }
