@@ -44,6 +44,7 @@ function olixmodule_mysql_usage_check()
     echo
     echo -e "${Ccyan}OPTIONS${CVOID}"
     olixmodule_mysql_usage_paramserver
+    echo -en "${CBLANC} --dock=$OLIX_MODULE_MYSQL_HOST ${CVOID}"; String.pad "--dock=$OLIX_MODULE_MYSQL_HOST" 30 " "; echo " : Nom du container docker"
 }
 
 
