@@ -63,7 +63,7 @@ function Mysql.server.check()
     local CONNEXION=$(Mysql.server.connection $1 $2 $3 $4)
     debug "Mysql.server.check (${CONNEXION})"
 
-    mysql $CONNEXION --execute="SHOW DATABASES;" > /dev/null
+    mysql $CONNEXION --execute="SHOW DATABASES;" > /dev/null 2>&1
     [[ $? -ne 0 ]] && return 1
 
     return 0

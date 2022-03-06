@@ -32,6 +32,9 @@ function olixmodule_mysql_params_parse()
             --pass=*)
                 OLIX_MODULE_MYSQL_PASS=$(String.explode.value $1)
                 ;;
+            --dock=*)
+                OLIX_MODULE_MYSQL_DOCK=$(String.explode.value $1)
+                ;;
             *)
                 olixmodule_mysql_params_get "$ACTION" "$1"
                 ;;
@@ -90,6 +93,9 @@ function olixmodule_mysql_params_debug ()
     debug "OLIX_MODULE_MYSQL_USER=${OLIX_MODULE_MYSQL_USER}"
     debug "OLIX_MODULE_MYSQL_PASS=${OLIX_MODULE_MYSQL_PASS}"
     case $1 in
+        check)
+            debug "OLIX_MODULE_MYSQL_DOCK=${OLIX_MODULE_MYSQL_DOCK}"
+            ;;
         create)
             debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
             debug "OLIX_MODULE_MYSQL_OWNER=${OLIX_MODULE_MYSQL_OWNER}"
@@ -98,10 +104,12 @@ function olixmodule_mysql_params_debug ()
             debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
             ;;
         dump)
+            debug "OLIX_MODULE_MYSQL_DOCK=${OLIX_MODULE_MYSQL_DOCK}"
             debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
             debug "OLIX_MODULE_MYSQL_DUMP=${OLIX_MODULE_MYSQL_DUMP}"
             ;;
         restore)
+            debug "OLIX_MODULE_MYSQL_DOCK=${OLIX_MODULE_MYSQL_DOCK}"
             debug "OLIX_MODULE_MYSQL_DUMP=${OLIX_MODULE_MYSQL_DUMP}"
             debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
             ;;
