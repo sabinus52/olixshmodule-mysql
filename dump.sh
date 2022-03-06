@@ -25,7 +25,11 @@ if [[ -z $OLIX_MODULE_MYSQL_DUMP ]]; then
 fi
 
 # Si la base existe
-Mysql.base.exists $OLIX_MODULE_MYSQL_BASE
+if [[ -z ${OLIX_MODULE_MYSQL_DOCK} ]]; then
+    Mysql.base.exists $OLIX_MODULE_MYSQL_BASE
+else
+    Mysql.docker.base.exists "${OLIX_MODULE_MYSQL_DOCK}" "$OLIX_MODULE_MYSQL_BASE"
+fi
 [[ $? -ne 0 ]] && critical "La base '${OLIX_MODULE_MYSQL_BASE}' n'existe pas"
 
 # Si le dump peut être créé
@@ -38,8 +42,19 @@ File.created $OLIX_MODULE_MYSQL_DUMP
 ##
 info "Dump de la base '${OLIX_MODULE_MYSQL_BASE}' vers le fichier '${OLIX_MODULE_MYSQL_DUMP}'"
 
-Mysql.base.dump $OLIX_MODULE_MYSQL_BASE $OLIX_MODULE_MYSQL_DUMP
-[[ $? -ne 0 ]] && critical "Echec du dump de la base '${OLIX_MODULE_MYSQL_BASE}' vers le fichier '${OLIX_MODULE_MYSQL_DUMP}'"
+if [[ -z ${OLIX_MODULE_MYSQL_DOCK} ]]; then
+
+    # Mode server
+    Mysql.base.dump $OLIX_MODULE_MYSQL_BASE $OLIX_MODULE_MYSQL_DUMP
+    [[ $? -ne 0 ]] && critical "Echec du dump de la base '${OLIX_MODULE_MYSQL_BASE}' vers le fichier '${OLIX_MODULE_MYSQL_DUMP}'"
+
+else
+
+    # Mode docker
+    Mysql.docker.base.dump ${OLIX_MODULE_MYSQL_DOCK} ${OLIX_MODULE_MYSQL_BASE} ${OLIX_MODULE_MYSQL_DUMP}
+    [[ $? -ne 0 ]] && critical "Echec du dump de la base ${OLIX_MODULE_MYSQL_DOCK}:'${OLIX_MODULE_MYSQL_BASE}' vers le fichier '${OLIX_MODULE_MYSQL_DUMP}'"
+
+fi
 
 
 ###

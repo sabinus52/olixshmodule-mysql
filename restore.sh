@@ -29,7 +29,11 @@ File.exists $OLIX_MODULE_MYSQL_DUMP
 [[ $? -ne 0 ]] && critical "Le dump '${OLIX_MODULE_MYSQL_DUMP}' est absent ou inaccessible"
 
 # Si la base existe
-Mysql.base.exists $OLIX_MODULE_MYSQL_BASE
+if [[ -z ${OLIX_MODULE_MYSQL_DOCK} ]]; then
+    Mysql.base.exists $OLIX_MODULE_MYSQL_BASE
+else
+    Mysql.docker.base.exists "${OLIX_MODULE_MYSQL_DOCK}" "$OLIX_MODULE_MYSQL_BASE"
+fi
 [[ $? -ne 0 ]] && critical "La base '${OLIX_MODULE_MYSQL_BASE}' n'existe pas"
 
 
@@ -46,8 +50,19 @@ Read.confirm "Confirmer" false
 ##
 info "Restauration du dump '${OLIX_MODULE_MYSQL_DUMP}' vers la base '${OLIX_MODULE_MYSQL_BASE}'"
 
-Mysql.base.restore $OLIX_MODULE_MYSQL_BASE $OLIX_MODULE_MYSQL_DUMP
-[[ $? -ne 0 ]] && critical "Echec de la restauration du dump '${OLIX_MODULE_MYSQL_DUMP}' vers la base '${OLIX_MODULE_MYSQL_BASE}'"
+if [[ -z ${OLIX_MODULE_MYSQL_DOCK} ]]; then
+
+    # Mode server
+    Mysql.base.restore $OLIX_MODULE_MYSQL_BASE $OLIX_MODULE_MYSQL_DUMP
+    [[ $? -ne 0 ]] && critical "Echec de la restauration du dump '${OLIX_MODULE_MYSQL_DUMP}' vers la base '${OLIX_MODULE_MYSQL_BASE}'"
+
+else
+
+    # Mode docker
+    Mysql.docker.base.restore ${OLIX_MODULE_MYSQL_DOCK} ${OLIX_MODULE_MYSQL_BASE} ${OLIX_MODULE_MYSQL_DUMP}
+    [[ $? -ne 0 ]] && critical "Echec de la restauration du dump ${OLIX_MODULE_MYSQL_DOCK}:'${OLIX_MODULE_MYSQL_DUMP}' vers la base '${OLIX_MODULE_MYSQL_BASE}'"
+
+fi
 
 
 

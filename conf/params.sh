@@ -104,10 +104,12 @@ function olixmodule_mysql_params_debug ()
             debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
             ;;
         dump)
+            debug "OLIX_MODULE_MYSQL_DOCK=${OLIX_MODULE_MYSQL_DOCK}"
             debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
             debug "OLIX_MODULE_MYSQL_DUMP=${OLIX_MODULE_MYSQL_DUMP}"
             ;;
         restore)
+            debug "OLIX_MODULE_MYSQL_DOCK=${OLIX_MODULE_MYSQL_DOCK}"
             debug "OLIX_MODULE_MYSQL_DUMP=${OLIX_MODULE_MYSQL_DUMP}"
             debug "OLIX_MODULE_MYSQL_BASE=${OLIX_MODULE_MYSQL_BASE}"
             ;;

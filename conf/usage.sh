@@ -44,7 +44,7 @@ function olixmodule_mysql_usage_check()
     echo
     echo -e "${Ccyan}OPTIONS${CVOID}"
     olixmodule_mysql_usage_paramserver
-    echo -en "${CBLANC} --dock=$OLIX_MODULE_MYSQL_HOST ${CVOID}"; String.pad "--dock=$OLIX_MODULE_MYSQL_HOST" 30 " "; echo " : Nom du container docker"
+    echo -en "${CBLANC} --dock= ${CVOID}"; String.pad "--dock=" 30 " "; echo " : Nom du container docker"
 }
 
 
@@ -61,6 +61,7 @@ function olixmodule_mysql_usage_dump()
     echo
     echo -e "${Ccyan}OPTIONS${CVOID}"
     olixmodule_mysql_usage_paramserver
+    echo -en "${CBLANC} --dock= ${CVOID}"; String.pad "--dock=" 30 " "; echo " : Nom du container docker"
     echo
     olixmodule_mysql_usage_listbases
 }
@@ -79,6 +80,7 @@ function olixmodule_mysql_usage_restore()
     echo
     echo -e "${Ccyan}OPTIONS${CVOID}"
     olixmodule_mysql_usage_paramserver
+    echo -en "${CBLANC} --dock= ${CVOID}"; String.pad "--dock=" 30 " "; echo " : Nom du container docker"
     echo
     olixmodule_mysql_usage_listbases
 }
