@@ -45,13 +45,13 @@ info "Dump de la base '${OLIX_MODULE_MYSQL_BASE}' vers le fichier '${OLIX_MODULE
 if [[ -z ${OLIX_MODULE_MYSQL_DOCK} ]]; then
 
     # Mode server
-    Mysql.base.dump $OLIX_MODULE_MYSQL_BASE $OLIX_MODULE_MYSQL_DUMP
+    Mysql.base.dump $OLIX_MODULE_MYSQL_BASE $OLIX_MODULE_MYSQL_DUMP "$OLIX_MODULE_MYSQL_EXTRAOPTS"
     [[ $? -ne 0 ]] && critical "Echec du dump de la base '${OLIX_MODULE_MYSQL_BASE}' vers le fichier '${OLIX_MODULE_MYSQL_DUMP}'"
 
 else
 
     # Mode docker
-    Mysql.docker.base.dump ${OLIX_MODULE_MYSQL_DOCK} ${OLIX_MODULE_MYSQL_BASE} ${OLIX_MODULE_MYSQL_DUMP}
+    Mysql.docker.base.dump ${OLIX_MODULE_MYSQL_DOCK} ${OLIX_MODULE_MYSQL_BASE} ${OLIX_MODULE_MYSQL_DUMP} "$OLIX_MODULE_MYSQL_EXTRAOPTS"
     [[ $? -ne 0 ]] && critical "Echec du dump de la base ${OLIX_MODULE_MYSQL_DOCK}:'${OLIX_MODULE_MYSQL_BASE}' vers le fichier '${OLIX_MODULE_MYSQL_DUMP}'"
 
 fi

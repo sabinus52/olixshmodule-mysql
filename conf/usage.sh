@@ -57,7 +57,7 @@ function olixmodule_mysql_usage_dump()
     echo
     echo -e "Faire un dump d'une base de données MySQL"
     echo
-    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename $OLIX_ROOT_SCRIPT) ${CVERT}mysql ${CJAUNE}dump${CVOID} ${CBLANC}<base> <dumpfile> [OPTIONS]${CVOID}"
+    echo -e "${CBLANC} Usage : ${CVIOLET}$(basename $OLIX_ROOT_SCRIPT) ${CVERT}mysql ${CJAUNE}dump${CVOID} ${CBLANC}<base> <dumpfile> [OPTIONS] [EXTRA OPTS MYSQLDUMP]${CVOID}"
     echo
     echo -e "${Ccyan}OPTIONS${CVOID}"
     olixmodule_mysql_usage_paramserver

@@ -86,18 +86,20 @@ function Mysql.docker.base.exists()
 # @param $1 : Nom du containeur
 # @param $2 : Nom de la base
 # @param $3 : Fichier de dump
-# @param $4-5 : Infos de connexion au serveur
+# @param $4 : Options en extra
+# @param $5-6 : Infos de connexion au serveur
 # @return bool
 ##
 function Mysql.docker.base.dump()
 {
-    local CONNECTION=$(Mysql.docker.connection $4 $5)
-    debug "Mysql.docker.base.dump ($1, $2, $3, ${CONNECTION})"
+    local CONNECTION=$(Mysql.docker.connection $5 $6)
+    debug "Mysql.docker.base.dump ($1, $2, $3, $4, ${CONNECTION})"
 
+    debug "docker exec -i $1 mysqldump --opt $4 $CONNECTION $2 > $3"
     if [[ $OLIX_OPTION_VERBOSE == true ]]; then
-        docker exec -i $1 mysqldump --verbose --opt $CONNECTION $2 > $3
+        docker exec -i $1 mysqldump --verbose --opt $4 $CONNECTION $2 > $3
     else
-        docker exec -i $1 mysqldump --opt $CONNECTION $2 > $3 2> ${OLIX_LOGGER_FILE_ERR}
+        docker exec -i $1 mysqldump --opt $4 $CONNECTION $2 > $3 2> ${OLIX_LOGGER_FILE_ERR}
     fi
     [[ $? -ne 0 ]] && return 1
     return 0
