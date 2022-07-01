@@ -35,6 +35,9 @@ function olixmodule_mysql_params_parse()
             --dock=*)
                 OLIX_MODULE_MYSQL_DOCK=$(String.explode.value $1)
                 ;;
+            --*)
+                olixmodule_mysql_params_extra "${ACTION}" "$1"
+                ;;
             *)
                 olixmodule_mysql_params_get "$ACTION" "$1"
                 ;;
@@ -83,6 +86,17 @@ function olixmodule_mysql_params_get()
 
 
 ###
+# Fonction de récupération des paramètres mysql en plus (--*)
+# @param $1 : Nom de l'action
+# @param $2 : Nom du paramètre
+##
+function olixmodule_mysql_params_extra()
+{
+    OLIX_MODULE_MYSQL_EXTRAOPTS="$OLIX_MODULE_MYSQL_EXTRAOPTS $2"
+}
+
+
+###
 # Mode DEBUG
 # @param $1 : Action du module
 ##
@@ -92,6 +106,7 @@ function olixmodule_mysql_params_debug ()
     debug "OLIX_MODULE_MYSQL_PORT=${OLIX_MODULE_MYSQL_PORT}"
     debug "OLIX_MODULE_MYSQL_USER=${OLIX_MODULE_MYSQL_USER}"
     debug "OLIX_MODULE_MYSQL_PASS=${OLIX_MODULE_MYSQL_PASS}"
+    debug "OLIX_MODULE_MYSQL_EXTRAOPTS=${OLIX_MODULE_MYSQL_EXTRAOPTS}"
     case $1 in
         check)
             debug "OLIX_MODULE_MYSQL_DOCK=${OLIX_MODULE_MYSQL_DOCK}"

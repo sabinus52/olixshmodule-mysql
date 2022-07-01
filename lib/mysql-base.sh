@@ -74,18 +74,20 @@ function Mysql.base.drop()
 # Fait un dump d'une base
 # @param $1  : Nom de la base
 # @param $2  : Fichier de dump
-# @param $3-6 : Infos de connexion au serveur
+# @param $3  : Options en extra
+# @param $4-7 : Infos de connexion au serveur
 # @return bool
 ##
 function Mysql.base.dump()
 {
-    local CONNECTION=$(Mysql.server.connection $3 $4 $5 $6)
-    debug "Mysql.base.dump ($1, $2, ${CONNECTION})"
+    local CONNECTION=$(Mysql.server.connection $4 $5 $6 $7)
+    debug "Mysql.base.dump ($1, $2, $3, ${CONNECTION})"
 
+    debug "mysqldump --opt $3 $CONNECTION $1 > $2"
     if [[ $OLIX_OPTION_VERBOSE == true ]]; then
-        mysqldump --verbose --opt $CONNECTION $1 > $2
+        mysqldump --verbose --opt $3 $CONNECTION $1 > $2
     else
-        mysqldump --opt $CONNECTION $1 > $2 2> ${OLIX_LOGGER_FILE_ERR}
+        mysqldump --opt $3 $CONNECTION $1 > $2 2> ${OLIX_LOGGER_FILE_ERR}
     fi
     [[ $? -ne 0 ]] && return 1
     return 0
